@@ -373,7 +373,7 @@ export class UiPopups extends Phaser.GameObjects.Container {
                     }
 
                     const payLineHeading = this.scene.add.text(gameConfig.scale.width / 2, 2700, "PayLines",  { fontSize: '70px', color: '#920000', align: "Center",  stroke: "#920000", strokeThickness: 3, } ).setOrigin(0.5)
-                    const payLines = this.scene.add.image( gameConfig.scale.width / 2, 3000, 'payLines' ).setScale(0.9); 
+                    const payLines = this.scene.add.image( gameConfig.scale.width / 2, 3000, 'payLinesImage' ).setScale(0.9); 
                     // const MajorSymBolHeading = this.scene.add.image( gameConfig.scale.width / 2, 800, 'majorSymbolHeading' ).setOrigin(0.5).setDepth(2);
                     
                     scrollContainer.add([content,minSymbol1, minSymbol2, 

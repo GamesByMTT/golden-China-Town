@@ -80,9 +80,9 @@ export class SocketManager {
 
     this.socket.on("disconnect", (reason: string) => {
       console.log("Disconnected from the server. Reason:", reason);
-      Globals.SceneHandler?.addScene("Disconnection", Disconnection, true)
-      // You can add additional logic here to handle the disconnection
-      // For example, attempt to reconnect manually, alert the user, etc.
+      setTimeout(() => {
+        Globals.SceneHandler?.addScene("Disconnection", Disconnection, true)
+      }, 1000);
     });
     this.socket.on("reconnect_attempt", (attemptNumber: number) => {
       console.log(`Reconnection attempt #${attemptNumber}`);
