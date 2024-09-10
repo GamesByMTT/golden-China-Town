@@ -253,7 +253,7 @@ export default class MainScene extends Scene {
         this.tweens.addCounter({
             from: 0,
             to: freeSpinCount,
-            duration: 1000, // Duration of the animation in milliseconds
+            duration: 200, // Duration of the animation in milliseconds
             onUpdate: (tween) => {
                 const value = Math.floor(tween.getValue());
                 freeText.setText(value.toString());
