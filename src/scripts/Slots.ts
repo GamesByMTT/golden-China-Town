@@ -61,7 +61,7 @@ export class Slots extends Phaser.GameObjects.Container {
             this.reelContainers.push(reelContainer); // Store the container for future use
             
             this.slotSymbols[i] = [];
-            for (let j = 0; j < 45; j++) { // 3 rows
+            for (let j = 0; j < 45; j++) {
                 let symbolKey = this.getRandomSymbolKey(); // Get a random symbol key
                 let slot = new Symbols(scene, symbolKey, { x: i, y: j }, reelContainer);
                 slot.symbol.setMask(new Phaser.Display.Masks.GeometryMask(scene, this.slotMask));
@@ -236,9 +236,6 @@ class Symbols {
             frameRate: 20,
             repeat: -1,
         });
-        // if(this.startMoving){
-        //     this.createBounceTween();
-        // }
     }
 
    createBounceTween(){

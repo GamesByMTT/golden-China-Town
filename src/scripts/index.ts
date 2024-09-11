@@ -18,6 +18,7 @@ if(!IS_DEV){
       // Call the provided callback function
       Globals.Socket = new SocketManager();
       Globals.Socket.onToken(data);
+      window.parent.postMessage("OnEnter", "*")
     }
   });
 }
