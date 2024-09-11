@@ -68,6 +68,7 @@ export class SocketManager {
         if(data.id == "ResultData"){
               ResultData.gameData = data.message.GameData;
               ResultData.playerData = data.message.PlayerData;
+            
               Globals.emitter?.Call("ResultData");
               console.log(ResultData);
         }
