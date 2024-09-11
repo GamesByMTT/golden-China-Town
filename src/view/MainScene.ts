@@ -192,7 +192,9 @@ export default class MainScene extends Scene {
         let winSprite: any
         if(spriteKey === "jackpotPopup"){
             winSprite = this.add.sprite(this.cameras.main.centerX - 125, this.cameras.main.centerY - 250, spriteKey).setDepth(11);
-        }else{
+        }else if(spriteKey === "hugeWinPopup"){
+            winSprite = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY - 120, spriteKey).setDepth(11);
+        } else{
             winSprite = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY - 50, spriteKey).setDepth(11);
         }
       
@@ -206,7 +208,7 @@ export default class MainScene extends Scene {
         this.tweens.addCounter({
             from: 0,
             to: winAmount,
-            duration: 1000, // Duration of the animation in milliseconds
+            duration: 500, // Duration of the animation in milliseconds
             onUpdate: (tween) => {
                 const value = Math.floor(tween.getValue());
                 winText.setText(value.toString());

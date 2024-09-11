@@ -103,15 +103,21 @@ export class Slots extends Phaser.GameObjects.Container {
         return this.symbolKeys[randomIndex];
     }
 
-    moveReel() {      
-        // Move the reel container back to its start position
-       
+    moveReel() {    
+        const initialYOffset = (this.slotSymbols[0][0].totalSymbol - this.slotSymbols[0][0].visibleSymbol - this.slotSymbols[0][0].startIndex) * this.slotSymbols[0][0].spacingY;
+    
+        for (let i = 0; i < this.reelContainers.length; i++) {
+            this.reelContainers[i].setPosition(
+                this.reelContainers[i].x,
+                -initialYOffset // Set the reel's position back to the calculated start position
+            );
+        }      
         for (let i = 0; i < this.reelContainers.length; i++) {
             for (let j = 0; j < this.reelContainers[i].list.length; j++) {
-                // setTimeout(() => {
+                setTimeout(() => {
                     this.slotSymbols[i][j].startMoving = true;
-                    // if (j < 3) this.slotSymbols[i][j].stopAnimation();
-                // }, 100 * i);
+                    if (j < 3) this.slotSymbols[i][j].stopAnimation();
+                }, 100 * i);
             }
         }
         this.uiContainer.maxbetBtn.disableInteractive();
@@ -119,6 +125,7 @@ export class Slots extends Phaser.GameObjects.Container {
     }
 
     update(time: number, delta: number) {
+        
         if (this.slotSymbols && this.moveSlots) {
             for (let i = 0; i < this.reelContainers.length; i++) {
                 // Update the position of the entire reel container (move the reel upwards)
@@ -127,9 +134,10 @@ export class Slots extends Phaser.GameObjects.Container {
                     this.slotSymbols[i][j].update(delta);
                 }
             }
+          
         }
     }
-    
+
     stopTween() {
         // Calculate the maximum delay for stopping the reels
         const maxDelay = 200 * (this.reelContainers.length - 1);
@@ -162,22 +170,16 @@ export class Slots extends Phaser.GameObjects.Container {
     }
     
     stopReel(reelContainer: Phaser.GameObjects.Container, reelIndex: number) {
-        // Stop the motion of the reelContainer
-        this.scene.tweens.add({
-            targets: reelContainer,
-            // y: 19 * 204, // Move to final stopping position
-            duration: 100, // Duration for stopping animation
-            ease: 'Bounce.easeOut', // Easing for a smooth stop
-            onComplete: () => {
+        // Stop the motion of the reelContaine
                for (let i = 0; i < this.slotSymbols.length; i++) {
                     for (let j = 0; j < this.slotSymbols[i].length; j++) {
                       setTimeout(() => {
                             this.slotSymbols[i][j].endTween();
-                        }, 100 * i);
+                        }, 140 * i);
                     }
                 }
-            }
-        });
+            
+    
     }
     // winMusic
     winMusic(key: string){
@@ -201,8 +203,6 @@ class Symbols {
     scene: Phaser.Scene;
     private isMobile: boolean;
     reelContainer: Phaser.GameObjects.Container;
-    tween?: Phaser.Tweens.Tween; // Optional tween reference
-
     constructor(scene: Phaser.Scene, symbolKey: string, index: { x: number; y: number }, reelContainer: Phaser.GameObjects.Container) {
         this.scene = scene;
         this.index = index;
@@ -245,81 +245,50 @@ class Symbols {
     }
 
     endTween() {
-        // Move the reel container back to its start position
-        this.initialYOffset = (this.totalSymbol - this.visibleSymbol - this.startIndex) * this.spacingY
-        this.reelContainer.setPosition(
-            this.reelContainer.x,
-            - this.initialYOffset// Set position back to the calculated start position
-        );
-        if(this.index.y < 3){
-            // Check if ResultData and ResultData.gameData are defined
-            
-                // Retrieve the elementId based on index
-            const elementId = ResultData.gameData.ResultReel[this.index.y][this.index.x];
-            console.log(this.reelContainer.list, "this.reelContainer.list");
-            for (let reelIndex = 10; reelIndex <= 12; reelIndex++) {
-                const symbolSprite = this.reelContainer.list[reelIndex] as Phaser.GameObjects.Sprite; // Type assertion
-                // Retrieve symbolId, providing a fallback if it doesn't exist
-                const symbolData = symbolSprite.data;
-
-                if (!symbolData) {
-                    console.error(`symbolSprite.data is null at index ${reelIndex}`);
-                    continue;
+            const finalPositionY = 0;
+            // Add a bounce tween for the symbol's position
+            this.scene.tweens.add({
+                targets: this.reelContainer,
+                y: finalPositionY, // Move reel container to its final position
+                ease: 'Bounce.easeOut', // Use the bounce easing for the effect
+                duration: 350, // Duration of the bounce effect
+                onComplete: () => {
+                    this.reelContainer.setPosition(this.reelContainer.x, finalPositionY);
                 }
-            
-                const symbolId = symbolData.get('symbolId');
-                if (!symbolId) {
-                    console.error(`symbolId is missing or null for symbolSprite at index ${reelIndex}`);
-                    continue;
-                }
-
-                
-                if (!symbolId) {
-                    console.error(`symbolId is missing or null for symbolSprite at index ${reelIndex}`);
-                    continue; // Skip this sprite if symbolId is not available
-                }
-                let textureKeys: string[] = []; // Array to hold valid texture keys
-            
-                // Loop through 14 possible texture variations for this symbol (0 to 13)
-                for (let i = 0; i < 14; i++) {
-                    const textureKey = `slots${symbolId}_${i}`; // Construct texture key
-            
+            });
+            if(this.index.y < 3){
+                let textureKeys: string[] = [];
+                const elementId = ResultData.gameData.ResultReel[this.index.y][this.index.x];
+                for (let i = 0; i <14; i++) {
+                    const textureKey = `slots${elementId}_${i}`;
                     // Check if the texture exists in cache
                     if (this.scene.textures.exists(textureKey)) {
-                        textureKeys.push(textureKey); // Push the texture key into the array
-                    }
+                        textureKeys.push(textureKey);
+                    } 
                 }
-            
-                // If we have valid texture keys, replace the current texture
+                // Check if we have texture keys to set
                 if (textureKeys.length > 0) {
-                    // Replace the current texture with the new one (randomly or the first one)
-                    const newTextureKey = textureKeys[Math.floor(Math.random() * textureKeys.length)]; // Randomly select a texture from the array
-                    (symbolSprite as Phaser.GameObjects.Sprite).setTexture(newTextureKey); // Set the new texture on the sprite
-            
-                    // Optionally, you could also store the new texture for reference
-                    symbolSprite.data.set('currentTexture', newTextureKey); // Store the texture key for future reference
-                } else {
-                    console.warn(`No valid textures found for symbol at index ${reelIndex}`);
+                    // Create animation with the collected texture keys
+                    this.scene.anims.create({
+                            key: `symbol_anim_${elementId}`,
+                            frames: textureKeys.map(key => ({ key })),
+                            frameRate: 20,
+                            repeat: -1
+                    });
+                    // Set the texture to the first key and start the animation
+                        this.symbol.setTexture(textureKeys[0]);               
                 }
             }
-        }
-            
+          
         // Set `startMoving` to false to stop movement
         this.startMoving = false;
+        // Add a bounce tween for the symbol's position
+        
         // Add a tween animation for the reel container, adjusting its position smoothly
-        this.scene.tweens.add({
-            targets: this.reelContainer,
-            y: this.reelContainer,
-            duration: 300,
-            ease: 'Bounce.easeOut',
-            repeat: 0,
-            onComplete: () => {
-                // Additional logic after the tween completes if necessary
-            },
-        });
     }
     
     update(dt: number) {
+        
         if (this.startMoving) {
             const deltaY = 0.1 * dt;
             const newY = this.reelContainer.y + (deltaY * 1.2);
@@ -329,5 +298,5 @@ class Symbols {
             }
         }
     }
-    
+
 }
