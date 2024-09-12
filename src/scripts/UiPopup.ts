@@ -275,7 +275,7 @@ export class UiPopups extends Phaser.GameObjects.Container {
                     );
                     scrollContainer.setMask(mask); // Apply the mask to the scroll container 
                     popupContainer.add(scrollContainer); 
-                    console.log("initData", initData.UIData.symbols);
+                    // console.log("initData", initData.UIData.symbols);
                     
                     // 7. Add the content that will be scrolled 
                     const contentHeight = 3100; // Example content height, adjust as needed 
@@ -509,6 +509,7 @@ export class UiPopups extends Phaser.GameObjects.Container {
             
             this.UiContainer.onSpin(false);
             Globals.Socket?.socket.emit("EXIT", {});
+            window.parent.postMessage("onExit", "*");   
             popupContainer.destroy();
             blurGraphic.destroy(); // Destroy blurGraphic when popup is closed
         }, 0, true);
