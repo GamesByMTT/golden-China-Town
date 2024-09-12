@@ -520,7 +520,7 @@ export class UiPopups extends Phaser.GameObjects.Container {
             this.exitBtn.setInteractive()
             // this.exitBtn.setTexture("normalButton");
             popupContainer.destroy();
-            blurGraphic.destroy(); // Destroy blurGraphic when popup is closed
+        blurGraphic.destroy(); // Destroy blurGraphic when popup is closed
         }, 0, true);
        
         this.yesBtn.setPosition(-130, 200).setScale(0.8);

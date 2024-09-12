@@ -105,13 +105,14 @@ export class Slots extends Phaser.GameObjects.Container {
 
     moveReel() {    
         const initialYOffset = (this.slotSymbols[0][0].totalSymbol - this.slotSymbols[0][0].visibleSymbol - this.slotSymbols[0][0].startIndex) * this.slotSymbols[0][0].spacingY;
-    
-        for (let i = 0; i < this.reelContainers.length; i++) {
-            this.reelContainers[i].setPosition(
-                this.reelContainers[i].x,
-                -initialYOffset // Set the reel's position back to the calculated start position
-            );
-        }      
+        setTimeout(() => {
+            for (let i = 0; i < this.reelContainers.length; i++) {
+                this.reelContainers[i].setPosition(
+                    this.reelContainers[i].x,
+                    -initialYOffset // Set the reel's position back to the calculated start position
+                );
+            }    
+        }, 100);  
         for (let i = 0; i < this.reelContainers.length; i++) {
             for (let j = 0; j < this.reelContainers[i].list.length; j++) {
                 setTimeout(() => {
@@ -159,36 +160,22 @@ export class Slots extends Phaser.GameObjects.Container {
                     }
                 });
             });
-        }, maxDelay + 100); // Ensure resultCallBack is called after all reels stop
+        }, maxDelay + 200); // Ensure resultCallBack is called after all reels stop
     
         // Iterate over reelContainers and stop them with a delay
-        for (let i = 0; i < this.reelContainers.length; i++) {
-            setTimeout(() => {
-                this.stopReel(this.reelContainers[i], i);
-            }, 100 * i); // Delay each reel stop by 200ms times its index
+       
+        for (let i = 0; i < this.slotSymbols.length; i++) {
+            for (let j = 0; j < this.slotSymbols[i].length; j++) {
+              setTimeout(() => {
+                    this.slotSymbols[i][j].endTween();
+                }, 200 * i);
+            }
         }
     }
     
     stopReel(reelContainer: Phaser.GameObjects.Container, reelIndex: number) {
-        // Stop the motion of the reelContaine
-        this.scene.tweens.add({
-            targets: this.slotSymbols,
-            y: 0, // Move reel container to its final position
-            ease: 'Bounce.easeIn', // Use the bounce easing for the effect
-            duration: 100, // Duration of the bounce effect
-            repeat: 1,
-            yoyo: true,
-            onComplete: () => {
-                // this.reelContainer.setPosition(this.reelContainer.x, finalPositionY);
-            }
-        });
-               for (let i = 0; i < this.slotSymbols.length; i++) {
-                    for (let j = 0; j < this.slotSymbols[i].length; j++) {
-                      setTimeout(() => {
-                            this.slotSymbols[i][j].endTween();
-                        }, 100 * i);
-                    }
-                }
+   
+        
             
     
     }
@@ -250,8 +237,6 @@ class Symbols {
         y: this.reelContainer.height + 10, // Move reelContainer upwards by 20 units
         ease: 'Elastic.easeOut', // Bounce easing function
         duration: 800, // Duration of the bounce effect
-        yoyo: true, // Make it bounce back and forth
-        repeat: 5, // Repeat once (you can adjust or remove if needed)
         onComplete: () => {
             this.scene.tweens.add({
                 targets: this.reelContainer,
@@ -314,7 +299,7 @@ class Symbols {
         // console.log(this.reelContainer.y, "this.reelContainer.y");
         
         if (this.startMoving) {
-            const deltaY = 0.07 * dt;
+            const deltaY = 0.06 * dt;
             const newY = this.reelContainer.y + (deltaY);
             this.reelContainer.y = newY;
             if (newY >= (this.isMobile ? window.innerHeight * 2 : (window.innerHeight * 4.5))) {
