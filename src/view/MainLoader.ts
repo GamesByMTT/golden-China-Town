@@ -16,6 +16,7 @@ export default class MainLoader extends Scene {
     private maxProgress: number = 0.7; // Cap progress at 70%
     private backgroundMusic: Phaser.Sound.BaseSound | null = null; // Add a variable for background music
     public soundManager: SoundManager; // Add a SoundManager instance
+    isAssestLoaded: boolean = false
 
     constructor(config: Phaser.Types.Scenes.SettingsConfig) {
         super(config);
@@ -75,6 +76,8 @@ export default class MainLoader extends Scene {
         });
 
         this.load.on('complete', () => {
+            console.log("completecompletecompletecomplete");
+            
             // Only complete progress after socket initialization
             if (Globals.Socket?.socketLoaded) {
                 this.loadScene();
@@ -84,8 +87,6 @@ export default class MainLoader extends Scene {
 
     private updateProgressBar(value: number) {
         console.log("updateProgressBarupdateProgressBarupdateProgressBarupdateProgressBar");
-        
-        const { width } = this.scale;
         if (this.progressBar) {
             // Update the crop width of the progress bar sprite based on the value
             this.progressBar.setCrop(0, 0, this.progressBar.width * value, this.progressBar.height);
@@ -93,6 +94,7 @@ export default class MainLoader extends Scene {
     }
 
     private completeLoading() {
+        console.log("completeLoading", this.isAssestLoaded, Globals.Socket?.socketLoaded);
         if (this.progressBox) {
             this.progressBox.destroy();
         }
@@ -112,28 +114,16 @@ export default class MainLoader extends Scene {
                 loop: false,
             });
         });
-
-        const isDomReady = document.readyState === 'complete'; // Check if DOM is fully loaded
-     
-        if(isDomReady && Globals.Socket?.socketLoaded) {
-          window.parent.postMessage("OnEnter", "*");
-        } else {
-          // If not ready, wait for both conditions to be met
-          const checkConditions = () => {
-            if (document.readyState === 'complete' && Globals.Socket?.socketLoaded) {
-              window.parent.postMessage("OnEnter", "*");
-              document.removeEventListener('readystatechange', checkConditions); // Remove listener once done
-            }
-          };
-          // Listen for DOMContentLoaded if not already loaded
-          if (!isDomReady) {
-            document.addEventListener('readystatechange', checkConditions);
-          }
-        }
+        this.isAssestLoaded = true
     }
 
     public loadScene() {
+        console.log("loadScene", this.isAssestLoaded, Globals.Socket?.socketLoaded);
+        
         this.completeLoading();
+        if(this.isAssestLoaded && Globals.Socket?.socketLoaded){
+            window.parent.postMessage("OnEnter", "*")
+        }
             Globals.SceneHandler?.addScene('MainScene', MainScene, true)
     }
 }
