@@ -106,6 +106,24 @@ export default class MainLoader extends Scene {
                 loop: false,
             });
         });
+
+        const isDomReady = document.readyState === 'complete'; // Check if DOM is fully loaded
+     
+        if(isDomReady && Globals.Socket?.socketLoaded) {
+          window.parent.postMessage("OnEnter", "*");
+        } else {
+          // If not ready, wait for both conditions to be met
+          const checkConditions = () => {
+            if (document.readyState === 'complete' && Globals.Socket?.socketLoaded) {
+              window.parent.postMessage("OnEnter", "*");
+              document.removeEventListener('readystatechange', checkConditions); // Remove listener once done
+            }
+          };
+          // Listen for DOMContentLoaded if not already loaded
+          if (!isDomReady) {
+            document.addEventListener('readystatechange', checkConditions);
+          }
+        }
     }
 
     public loadScene() {
