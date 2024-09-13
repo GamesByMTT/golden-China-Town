@@ -8,6 +8,8 @@ private backgroundMusic: Phaser.Sound.BaseSound | null = null; // Add a variable
     super(config)
  }
  preload(){
+   console.log("Background Scene Load");
+   
     this.load.image("BackgroundNew", "src/sprites/NewBackground.png");
    //  this.load.audio("backgroundMusic", "src/sounds/Teaser.wav")
     
@@ -18,5 +20,4 @@ private backgroundMusic: Phaser.Sound.BaseSound | null = null; // Add a variable
    //  this.backgroundMusic = this.sound.add("backgroundMusic", { loop: true, volume: 0.1 });
    //  this.backgroundMusic.play();
  }
-   
 }

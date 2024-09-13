@@ -34,6 +34,8 @@ export default class MainScene extends Scene {
      * @method create method used to create scene and add graphics respective to the x and y coordinates
      */
     create() {
+        console.log("MainScene Create");
+        
         // Set up the background
         const { width, height } = this.cameras.main;
         // Initialize main container

@@ -24,6 +24,8 @@ export default class MainLoader extends Scene {
     }
 
     preload() {
+        console.log("CheckMainLoader Scene");
+        
         // Load the background image first
         // this.load.image("Background", "src/sprites/Background.jpg");
         this.load.image("logo", "src/sprites/chinaTown.png");
@@ -51,6 +53,8 @@ export default class MainLoader extends Scene {
     }
 
     private startLoadingAssets() {
+        console.log("startLoadingAssetsstartLoadingAssetsstartLoadingAssets");
+        
         // Load all assets from LoaderConfig
         Object.entries(LoaderConfig).forEach(([key, value]) => {
             this.load.image(key, value);
@@ -79,6 +83,8 @@ export default class MainLoader extends Scene {
     }
 
     private updateProgressBar(value: number) {
+        console.log("updateProgressBarupdateProgressBarupdateProgressBarupdateProgressBar");
+        
         const { width } = this.scale;
         if (this.progressBar) {
             // Update the crop width of the progress bar sprite based on the value
