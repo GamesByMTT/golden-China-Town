@@ -145,7 +145,7 @@ export class Slots extends Phaser.GameObjects.Container {
         if (this.slotSymbols && this.moveSlots) {
             for (let i = 0; i < this.reelContainers.length; i++) {
                 // Update the position of the entire reel container (move the reel upwards)
-                this.reelContainers[i].y += 2000 * delta / 1000; 
+                this.reelContainers[i].y += 2100 * delta / 1000; 
 
                 // Seamless looping: Reset position when the top goes offscreen
                 if (this.reelContainers[i].y >= this.maskHeight) {
@@ -195,7 +195,7 @@ export class Slots extends Phaser.GameObjects.Container {
 
         const stopReel = (reelIndex: number) => {
             const reel = this.reelContainers[reelIndex];
-            const reelDelay = reelStopDelay * reelIndex;
+            const reelDelay = reelStopDelay * (reelIndex * 0.8);
             for (let j = 0; j < this.slotSymbols[reelIndex].length; j++) {
                  this.scene.time.delayedCall(380, () => { // Example: 50ms delay
                     this.moveSlots = false;
@@ -211,10 +211,10 @@ export class Slots extends Phaser.GameObjects.Container {
                 targets: reel,
                 delay: reelDelay, // Apply the delay here
                 y: {
-                    from:targetY - 400,
+                    from:targetY - 300,
                     to: targetY ,
-                    duration: 500, 
-                    ease: 'Sine.easeOut'
+                    duration: 400,  
+                    ease: 'Quint.easeOut'
                 },
                 onComplete: () => {
                     if (reelIndex === this.reelContainers.length - 1) {  

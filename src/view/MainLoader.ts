@@ -22,12 +22,11 @@ export default class MainLoader extends Scene {
         // Start loading assets and sounds
         this.loadAssets();
         this.loadSounds();
-
         // Listen for the load completion event
-        this.load.on('complete', () => {
-            console.log("Assets loading complete");
-            this.completeLoading();
-        });
+        // this.load.on('complete', () => {
+        //     console.log("Assets loading complete");
+        //     this.completeLoading();
+        // });
     }
 
     loadAssets() {
@@ -40,11 +39,23 @@ export default class MainLoader extends Scene {
     loadSounds() {
         Object.entries(LoaderSoundConfig).forEach(([key, value]) => {
             console.log(key, "Sounds");
-            
             if (typeof value === "string") {
                 this.load.audio(key, [value]); // Load sounds from LoaderSoundConfig
             }
         });
+
+        console.log("SoundsLoaded now check for complete");
+        
+         // Listen for completion of sounds specifically:
+        const loadedComplete = this.load.on('complete', () => { 
+            console.log("Sounds loading complete");
+            this.completeLoading(); 
+        });
+        if(loadedComplete){
+
+        }else{
+            this.completeLoading(); 
+        }
     }
 
     private completeLoading() {
@@ -74,7 +85,6 @@ export default class MainLoader extends Scene {
         // Continuously check if the socket is loaded
         const socketInterval = setInterval(() => {
             console.log("checking Interval");
-            
             if (this.isAssetsLoaded && Globals.Socket?.socketLoaded) {
                 clearInterval(socketInterval); // Stop checking when socket is loaded
                 this.loadScene();
