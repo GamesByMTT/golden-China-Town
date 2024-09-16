@@ -214,7 +214,7 @@ export class Slots extends Phaser.GameObjects.Container {
                     from:targetY - 300,
                     to: targetY ,
                     duration: 400,  
-                    ease: 'Quint.easeOut'
+                    ease: 'Cubic.easeOut'
                 },
                 onComplete: () => {
                     if (reelIndex === this.reelContainers.length - 1) {  

@@ -43,19 +43,18 @@ export default class MainLoader extends Scene {
                 this.load.audio(key, [value]); // Load sounds from LoaderSoundConfig
             }
         });
-
-        console.log("SoundsLoaded now check for complete");
+        this.load.on('start', () => {
+            console.log("Loading started");
+        });
+        
+        console.log("SoundsLoaded now check for complete", this.load);
         
          // Listen for completion of sounds specifically:
-        const loadedComplete = this.load.on('complete', () => { 
+        this.load.on('complete', () => { 
             console.log("Sounds loading complete");
             this.completeLoading(); 
         });
-        if(loadedComplete){
-
-        }else{
-            this.completeLoading(); 
-        }
+       
     }
 
     private completeLoading() {
