@@ -26,37 +26,9 @@ export default class MainLoader extends Scene {
 
     preload() {
         console.log("CheckMainLoader Scene");
-        
-        // Load the background image first
-        // this.load.image("Background", "src/sprites/Background.jpg");
-        this.load.image("logo", "src/sprites/chinaTown.png");
-        this.load.image('loaderBg', "src/sprites/loaderBg.png")
-        this.load.image("assetsloader", "src/sprites/assetsLoader.png")
-       
-        // Once the background image is loaded, start loading other assets
-        this.load.once('complete', () => {
-            this.addBackgroundImage();
-            this.startLoadingAssets();
-        });
-    }
 
-    private addBackgroundImage() {
-        const { width, height } = this.scale;
-        // this.add.image(width / 2, height / 2, 'Background').setOrigin(0.5).setDisplaySize(width, height);
-        this.logoImage = this.add.sprite(width/2, 300, 'logo').setScale(0.8, 0.8)
- 
-        // Initialize progress bar graphics
-        this.progressBox = this.add.sprite(width / 2, height / 2 + 400, "loaderBg")
+        this.load.start();
 
-        // Initialize progress bar using assetsLoader.png image
-        this.progressBar = this.add.sprite(width / 2 + 5, height / 2 + 398, "assetsloader")
-        this.progressBar.setCrop(0, 0, 0, this.progressBar.height); // Start with 0 width
-    }
-
-    private startLoadingAssets() {
-        console.log("startLoadingAssetsstartLoadingAssetsstartLoadingAssets");
-        
-        // Load all assets from LoaderConfig
         Object.entries(LoaderConfig).forEach(([key, value]) => {
             this.load.image(key, value);
         });
@@ -66,45 +38,32 @@ export default class MainLoader extends Scene {
                 this.load.audio(key, [value]); // Cast value to string
             }
         });
-        // Start loading assets and update progress bar
-        this.load.start();
 
-        this.load.on('progress', (value: number) => {
-            // Limit progress to 70% until socket initialization is done
-            const adjustedValue = Math.min(value * this.maxProgress, this.maxProgress);
-            this.updateProgressBar(adjustedValue);
-        });
-
-        this.load.on('complete', () => {
-            console.log("completecompletecompletecomplete");
-            
-            // Only complete progress after socket initialization
-            if (Globals.Socket?.socketLoaded) {
-                this.loadScene();
-            }
-        });
+        setTimeout(() => {
+            this.load.on('complete', () => {
+                console.log("completecompletecompletecomplete");
+                
+                // Only complete progress after socket initialization
+                if (Globals.Socket?.socketLoaded) {
+                    this.completeLoading();
+                }
+            });
+        }, 3000);
     }
 
-    private updateProgressBar(value: number) {
-        console.log("updateProgressBarupdateProgressBarupdateProgressBarupdateProgressBar");
-        if (this.progressBar) {
-            // Update the crop width of the progress bar sprite based on the value
-            this.progressBar.setCrop(0, 0, this.progressBar.width * value, this.progressBar.height);
-        }
-    }
 
     private completeLoading() {
         console.log("completeLoading", this.isAssestLoaded, Globals.Socket?.socketLoaded);
-        if (this.progressBox) {
-            this.progressBox.destroy();
-        }
-        if (this.progressBar) {
-            this.progressBar.destroy();
-        }
-        if(this.logoImage){
-            this.logoImage.destroy();
-        }
-        this.updateProgressBar(1); // Set progress to 100%
+        // if (this.progressBox) {
+        //     this.progressBox.destroy();
+        // }
+        // if (this.progressBar) {
+        //     this.progressBar.destroy();
+        // }
+        // if(this.logoImage){
+        //     this.logoImage.destroy();
+        // }
+        // this.updateProgressBar(1); // Set progress to 100%
         const loadedTextures = this.textures.list;
         Globals.resources = { ...loadedTextures }
         Object.entries(LoaderSoundConfig).forEach(([key]) => {
@@ -115,12 +74,12 @@ export default class MainLoader extends Scene {
             });
         });
         this.isAssestLoaded = true
+        this.loadScene()
     }
 
     public loadScene() {
         console.log("loadScene", this.isAssestLoaded, Globals.Socket?.socketLoaded);
-        
-        this.completeLoading();
+        // this.completeLoading();
         if(this.isAssestLoaded && Globals.Socket?.socketLoaded){
             window.parent.postMessage("OnEnter", "*")
         }

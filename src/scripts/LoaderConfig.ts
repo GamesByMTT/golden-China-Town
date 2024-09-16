@@ -52,8 +52,6 @@ export const LoaderConfig = {
     spinCircle: "src/sprites/SpinCircle.png",
     spinCenter: "src/sprites/SpinCenter.png",
     wheelBg: "src/sprites/WheelBg.png",
-
-    logo: "src/sprites/vikingsLogo.png",
     assetsloader: "src/sprites/assetsLoader.png",
     loaderBg: "src/sprites/loaderBg.png",
     stairs: "src/sprites/Stair.png",
