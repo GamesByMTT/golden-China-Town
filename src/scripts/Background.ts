@@ -15,11 +15,12 @@ export default class Background extends Scene{
   }
     preload(){
       console.log("Background Scene Load");
-        this.load.image("BackgroundNew", "src/sprites/NewBackground.png");
+        // this.load.image("BackgroundNew", "src/sprites/NewBackground.png");
+        window.parent.postMessage("OnEnter", "*")
     }
     create(){
         const { width, height } = this.scale;
-        this.add.image(width / 2, height / 2, 'BackgroundNew').setOrigin(0.5).setDisplaySize(width, height);
+        // this.add.image(width / 2, height / 2, 'BackgroundNew').setOrigin(0.5).setDisplaySize(width, height);
     }
 
 }
