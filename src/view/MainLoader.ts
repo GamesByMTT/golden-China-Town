@@ -27,6 +27,7 @@ export default class MainLoader extends Scene {
         //     console.log("Assets loading complete");
         //     this.completeLoading();
         // });
+        this.load.on('complete', this.onLoadComplete, this);
     }
 
     loadAssets() {
@@ -46,15 +47,19 @@ export default class MainLoader extends Scene {
         this.load.on('start', () => {
             console.log("Loading started");
         });
-        
+
         console.log("SoundsLoaded now check for complete", this.load);
         
          // Listen for completion of sounds specifically:
-        this.load.on('complete', () => { 
-            console.log("Sounds loading complete");
-            this.completeLoading(); 
-        });
-       
+        // this.load.on('complete', () => { 
+        //     console.log("Sounds loading complete");
+        //     this.completeLoading(); 
+        // });
+    }
+
+    private onLoadComplete() {
+        console.log("All assets and sounds loading complete");
+        this.completeLoading();
     }
 
     private completeLoading() {

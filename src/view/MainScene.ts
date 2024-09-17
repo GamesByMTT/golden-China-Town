@@ -265,15 +265,15 @@ export default class MainScene extends Scene {
             onComplete: () => {
                 const startButton = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY + 80, 'freeSpinStartButton').setDepth(11).setScale(0.5, 0.5).setInteractive();
                 startButton.on("pointerdown", () => {
-                    inputOverlay.destroy();
-                    freeText.destroy();
-                    winSprite.destroy();
-                    startButton.destroy();
-                    Globals.Socket?.sendMessage("SPIN", { currentBet: currentGameData.currentBetIndex, currentLines: 20, spins: 1 });
-                    currentGameData.currentBalance -= initData.gameData.Bets[currentGameData.currentBetIndex];
-                    // this.currentBalanceText.updateLabelText(currentGameData.currentBalance.toFixed(2));
-                    this.onSpinCallBack();
-        });
+                            inputOverlay.destroy();
+                            freeText.destroy();
+                            winSprite.destroy();
+                            startButton.destroy();
+                            Globals.Socket?.sendMessage("SPIN", { currentBet: currentGameData.currentBetIndex, currentLines: 20, spins: 1 });
+                            currentGameData.currentBalance -= initData.gameData.Bets[currentGameData.currentBetIndex];
+                            // this.currentBalanceText.updateLabelText(currentGameData.currentBalance.toFixed(2));
+                            this.onSpinCallBack();
+                });
                 if(this.uiContainer.isAutoSpinning){
                 this.time.delayedCall(3000, () => {
                     inputOverlay.destroy();
@@ -281,8 +281,6 @@ export default class MainScene extends Scene {
                     winSprite.destroy();
                 });
                 }
-                // Automatically close the popup after a few seconds
-                
             }
         });
     }

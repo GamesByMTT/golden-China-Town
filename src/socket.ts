@@ -62,7 +62,7 @@ export class SocketManager {
             initData.UIData.symbols = data.message.UIData.paylines.symbols
             initData.gameData.BonusData = data.message.BonusData;
             console.log(data, "initData on Socket File");
-            Globals.SceneHandler?.addScene("MainLoader", MainLoader, true)
+            // Globals.SceneHandler?.addScene("MainLoader", MainLoader, true)
           }
         }
         if(data.id == "ResultData"){
