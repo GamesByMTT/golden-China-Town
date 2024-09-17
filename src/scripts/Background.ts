@@ -53,9 +53,14 @@ export default class Background extends Scene{
       this.load.on('start', () => {
           console.log("Loading started");
       })
-      this.load.on('progress', ()=>{
-        console.log("loading on Progress");
-      })
+      this.load.on('progress', (value: any) => {
+        console.log("Loading progress:", value); // More informative progress
+      });
+
+      this.load.on('loaderror', (file:any) => {
+        console.error('Error loading sound:', file.key);
+      });
+      
       console.log("SoundsLoaded now check for complete", this.load);
     }
 
