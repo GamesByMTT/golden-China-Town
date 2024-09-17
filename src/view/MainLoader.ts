@@ -218,7 +218,6 @@ export default class MainLoader extends Scene {
 
     public loadScene() {
         this.completeLoading();
-
-        // Globals.SceneHandler?.addScene('MainScene', MainScene, true)
+        Globals.SceneHandler?.addScene('MainScene', MainScene, true)
     }
 }
