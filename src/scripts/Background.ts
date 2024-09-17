@@ -1,15 +1,10 @@
 import Phaser from "phaser";
-import { Scene, GameObjects } from "phaser";
-import { ResultData, Globals } from "./Globals";
-import MainScene from "../view/MainScene";
-import { LoaderConfig, LoaderSoundConfig } from "./LoaderConfig";
+import { Scene } from "phaser";
+import { LoaderConfig } from "./LoaderConfig";
 import SoundManager from "./SoundManager";
-import { Howl } from "howler";
 
 export default class Background extends Scene{
   resources: any;
-  private progressBar: GameObjects.Sprite | null = null;
-  private maxProgress: number = 0.7; // Cap progress at 70%
   public soundManager: SoundManager; // Add a SoundManager instance
   isAssetsLoaded: boolean = false;
 
@@ -19,114 +14,12 @@ export default class Background extends Scene{
       this.soundManager = new SoundManager(this) 
   }
     preload(){
+      console.log("Background Scene Load");
         this.load.image("BackgroundNew", "src/sprites/NewBackground.png");
-        this.loadAssets();
-        this.loadSounds();
-
-        this.load.on('complete', this.onLoadComplete, this);
-      //  this.load.audio("backgroundMusic", "src/sounds/Teaser.wav")
     }
-    // create(){
-    //     const { width, height } = this.scale;
-    //     this.add.image(width / 2, height / 2, 'BackgroundNew').setOrigin(0.5).setDisplaySize(width, height);
-    //   //  this.backgroundMusic = this.sound.add("backgroundMusic", { loop: true, volume: 0.1 });
-    //   //  this.backgroundMusic.play();
-    // }
-
-    loadAssets() {
-      const { width, height } = this.scale;
-      const assetKeys = Object.keys(LoaderConfig); // Get asset keys
-        assetKeys.forEach((key, index) => {
-          // this.load.image(key, LoaderConfig[key]);
-          console.log(`[${index + 1}/${assetKeys.length}] Queued:`, key);
-          // Log the asset index and key
-        });
-
-      Object.entries(LoaderConfig).forEach(([key, value]) => {
-        this.load.image(key, value);
-        // console.log("Queued for loading:", key); // Log after queuing
-      });
-      this.load.on('start', () => {
-        console.log("Loading started");
-      })
-      this.progressBar = this.add.sprite(width / 2 - 200, height / 2 + 90, "assetsloader").setOrigin(0, 0.5);
-      this.progressBar.setCrop(0, 0, 0, this.progressBar.height); // Start with 0 width
-
-      this.load.on('progress', (value: number) => {
-        const adjustedValue = Math.min(value * this.maxProgress, this.maxProgress);
-        console.log(adjustedValue, "adjustedValue");
-        this.updateProgressBar(adjustedValue);
-    });
-      this.load.on('loaderror', (file:any) => {
-        console.error('Error loading sound:', file.key);
-      });
-      console.log("SoundsLoaded now check for complete", this.load);
+    create(){
+        const { width, height } = this.scale;
+        this.add.image(width / 2, height / 2, 'BackgroundNew').setOrigin(0.5).setDisplaySize(width, height);
     }
-
-    private updateProgressBar(value: number) {
-      const { width } = this.scale;
-      if (this.progressBar) {
-          // Update the crop width of the progress bar sprite based on the value
-          this.progressBar.setCrop(0, 0, this.progressBar.width * value, this.progressBar.height);
-      }
-  }
-
-    loadSounds() {
-      Object.entries(LoaderSoundConfig).forEach(([key, value]) => {
-          if (typeof value === "string") {
-              this.load.audio(key, [value]); // Load sounds from LoaderSoundConfig
-              console.log("Queued for Sound loading:", key); // Log after queuing
-          }
-      });
-     this.updateProgressBar(1)
-    }
-
-    private onLoadComplete() {
-      console.log("All assets and sounds loading complete");
-      this.completeLoading();
-    }
-
-    private completeLoading() {
-      // Ensure assets and socket are both ready before proceeding
-      this.isAssetsLoaded = true;
-      console.log("completeLoading", this.isAssetsLoaded, Globals.Socket?.socketLoaded);
-
-      // Store loaded assets in Globals
-      const loadedTextures = this.textures.list;
-      Globals.resources = { ...loadedTextures };
-
-      // Load sound resources
-      Object.entries(LoaderSoundConfig).forEach(([key]) => {
-          Globals.soundResources[key] = new Howl({
-              src: [LoaderSoundConfig[key]], // Use the same source as for loading
-              autoplay: false,
-              loop: false,
-          });
-      });
-      // Check if socket is loaded, then load the scene
-      this.checkSocketAndProceed();
-    }
-
-    checkSocketAndProceed() {
-      console.log("Checking if loaded and assets are ready...");
-      // Continuously check if the socket is loaded
-      const socketInterval = setInterval(() => {
-          console.log("checking Interval");
-          if (this.isAssetsLoaded) {
-              clearInterval(socketInterval); // Stop checking when socket is loaded
-              this.loadScene();
-          }
-      }, 100); // Check every 100ms
-    }
-
-    public loadScene() {
-      // Trigger postMessage to the parent window
-       window.parent.postMessage("OnEnter", "*");
-      // Add and start MainScene
-      Globals.SceneHandler?.addScene('MainScene', MainScene, true);
-
-    }
-
-   
 
 }

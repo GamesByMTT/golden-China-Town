@@ -1,3 +1,5 @@
+// MainLoader.ts
+
 import { Scene, GameObjects } from "phaser";
 import MainScene from "./MainScene";
 import { LoaderConfig, LoaderSoundConfig } from "../scripts/LoaderConfig";
@@ -7,8 +9,12 @@ import { Howl } from "howler";
 
 export default class MainLoader extends Scene {
     resources: any;
+    private progressBar: GameObjects.Sprite | null = null;
+    private progressBox: GameObjects.Sprite | null = null;
+    private logoImage: GameObjects.Sprite | null = null;
+    private maxProgress: number = 0.7; // Cap progress at 70%
+    private backgroundMusic: Phaser.Sound.BaseSound | null = null; // Add a variable for background music
     public soundManager: SoundManager; // Add a SoundManager instance
-    isAssetsLoaded: boolean = false;
 
     constructor(config: Phaser.Types.Scenes.SettingsConfig) {
         super(config);
@@ -17,89 +23,92 @@ export default class MainLoader extends Scene {
     }
 
     preload() {
-        console.log("Check MainLoader Scene");
-
-        // Start loading assets and sounds
-        this.loadAssets();
-        this.loadSounds();
-        // Listen for the load completion event
-        // this.load.on('complete', () => {
-        //     console.log("Assets loading complete");
-        //     this.completeLoading();
-        // });
-        this.load.on('complete', this.onLoadComplete, this);
+        // Load the background image first
+        // this.load.image("Background", "src/sprites/Background.jpg");
+        this.load.image("logo", "src/sprites/chinaTown.png");
+        this.load.image('loaderBg', "src/sprites/loaderBg.png")
+        this.load.image("assetsloader", "src/sprites/assetsLoader.png")
+       
+        // Once the background image is loaded, start loading other assets
+        this.load.once('complete', () => {
+            this.addBackgroundImage();
+            this.startLoadingAssets();
+        });
     }
 
-    loadAssets() {
+    private addBackgroundImage() {
+        const { width, height } = this.scale;
+        // this.add.image(width / 2, height / 2, 'Background').setOrigin(0.5).setDisplaySize(width, height);
+        this.logoImage = this.add.sprite(width/2, 300, 'logo').setScale(0.8, 0.8)
+ 
+        // Initialize progress bar graphics
+        this.progressBox = this.add.sprite(width / 2, height / 2 + 400, "loaderBg")
+
+        // Initialize progress bar using assetsLoader.png image
+        this.progressBar = this.add.sprite(width / 2 + 5, height / 2 + 398, "assetsloader")
+        this.progressBar.setCrop(0, 0, 0, this.progressBar.height); // Start with 0 width
+    }
+
+    private startLoadingAssets() {
+        // Load all assets from LoaderConfig
         Object.entries(LoaderConfig).forEach(([key, value]) => {
-            console.log(key, "Images");
             this.load.image(key, value);
         });
-    }
-
-    loadSounds() {
+        // Preload all sounds from LoaderSoundConfig
         Object.entries(LoaderSoundConfig).forEach(([key, value]) => {
-            console.log(key, "Sounds");
             if (typeof value === "string") {
-                this.load.audio(key, [value]); // Load sounds from LoaderSoundConfig
+                this.load.audio(key, [value]); // Cast value to string
             }
         });
-        this.load.on('start', () => {
-            console.log("Loading started");
+        // Start loading assets and update progress bar
+        this.load.start();
+
+        this.load.on('progress', (value: number) => {
+            // Limit progress to 70% until socket initialization is done
+            const adjustedValue = Math.min(value * this.maxProgress, this.maxProgress);
+            this.updateProgressBar(adjustedValue);
         });
 
-        console.log("SoundsLoaded now check for complete", this.load);
-        
-         // Listen for completion of sounds specifically:
-        // this.load.on('complete', () => { 
-        //     console.log("Sounds loading complete");
-        //     this.completeLoading(); 
-        // });
+        this.load.on('complete', () => {
+            if (Globals.Socket?.socketLoaded) {
+                this.loadScene();
+            }
+        });
     }
 
-    private onLoadComplete() {
-        console.log("All assets and sounds loading complete");
-        this.completeLoading();
+    private updateProgressBar(value: number) {
+        const { width } = this.scale;
+        if (this.progressBar) {
+            // Update the crop width of the progress bar sprite based on the value
+            this.progressBar.setCrop(0, 0, this.progressBar.width * value, this.progressBar.height);
+        }
     }
 
     private completeLoading() {
-        // Ensure assets and socket are both ready before proceeding
-        this.isAssetsLoaded = true;
-        console.log("completeLoading", this.isAssetsLoaded, Globals.Socket?.socketLoaded);
-
-        // Store loaded assets in Globals
+        if (this.progressBox) {
+            this.progressBox.destroy();
+        }
+        if (this.progressBar) {
+            this.progressBar.destroy();
+        }
+        if(this.logoImage){
+            this.logoImage.destroy();
+        }
+        this.updateProgressBar(1); // Set progress to 100%
         const loadedTextures = this.textures.list;
-        Globals.resources = { ...loadedTextures };
-
-        // Load sound resources
+        Globals.resources = { ...loadedTextures }
         Object.entries(LoaderSoundConfig).forEach(([key]) => {
             Globals.soundResources[key] = new Howl({
-                src: [LoaderSoundConfig[key]], // Use the same source as for loading
+                src: [LoaderSoundConfig[key]], // Use the same source as you provided for loading
                 autoplay: false,
                 loop: false,
             });
         });
-
-        // Check if socket is loaded, then load the scene
-        this.checkSocketAndProceed();
-    }
-
-    checkSocketAndProceed() {
-        console.log("Checking if socket is loaded and assets are ready...");
-        // Continuously check if the socket is loaded
-        const socketInterval = setInterval(() => {
-            console.log("checking Interval");
-            if (this.isAssetsLoaded && Globals.Socket?.socketLoaded) {
-                clearInterval(socketInterval); // Stop checking when socket is loaded
-                this.loadScene();
-            }
-        }, 100); // Check every 100ms
     }
 
     public loadScene() {
-        // Trigger postMessage to the parent window
-        window.parent.postMessage("OnEnter", "*");
-        // Add and start MainScene
-        Globals.SceneHandler?.addScene('MainScene', MainScene, true);
+        this.completeLoading();
+        window.parent.postMessage("OnEnter", "*")
+        Globals.SceneHandler?.addScene('MainScene', MainScene, true)
     }
 }
