@@ -44,6 +44,7 @@ export default class MainScene extends Scene {
         this.soundManager = new SoundManager(this)
        
         this.Background = new Phaser.GameObjects.Sprite(this, width/2, height/2, "Background")
+        this.mainContainer.add(this.Background)
         // Set up the stairs frame
         this.stairs = new Phaser.GameObjects.Sprite(this, width/2, height/1.02, 'stairs')
         // this.reelBg = new Phaser.GameObjects.Sprite(this, width/2, height/2.2, 'reelBg').setDepth(0)

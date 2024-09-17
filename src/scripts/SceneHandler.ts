@@ -52,7 +52,7 @@ export class SceneHandler {
         if (this.scenes.has(key)) {
             this.game.scene.start(key);
         } else {
-            console.warn(`Scene ${key} does not exist.`);
+            // console.warn(`Scene ${key} does not exist.`);
         }
     }
     /**
@@ -63,7 +63,7 @@ export class SceneHandler {
         if (this.scenes.has(key)) {
             this.game.scene.stop(key);
         } else {
-            console.warn(`Scene ${key} does not exist.`);
+            // console.warn(`Scene ${key} does not exist.`);
         }
     }
     /**

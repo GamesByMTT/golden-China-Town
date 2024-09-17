@@ -468,7 +468,7 @@ export class UiPopups extends Phaser.GameObjects.Container {
         ).setDepth(1); // Set depth higher than blurGraphic
     
         // Popup background image
-        const popupBg = this.scene.add.image(0, 0, 'messagePopup').setDepth(10);
+        const popupBg = this.scene.add.image(0, 0, 'messagePopupBgImage').setDepth(10);
         popupBg.setOrigin(0.5);
         popupBg.setDisplaySize(1000, 883); // Set the size for your popup background
         popupBg.setAlpha(1); // Set background transparency

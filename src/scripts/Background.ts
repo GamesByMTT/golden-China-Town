@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { Scene } from "phaser";
+import { Scene, GameObjects } from "phaser";
 import { ResultData, Globals } from "./Globals";
 import MainScene from "../view/MainScene";
 import { LoaderConfig, LoaderSoundConfig } from "./LoaderConfig";
@@ -8,6 +8,8 @@ import { Howl } from "howler";
 
 export default class Background extends Scene{
   resources: any;
+  private progressBar: GameObjects.Sprite | null = null;
+  private maxProgress: number = 0.7; // Cap progress at 70%
   public soundManager: SoundManager; // Add a SoundManager instance
   isAssetsLoaded: boolean = false;
 
@@ -32,7 +34,7 @@ export default class Background extends Scene{
     // }
 
     loadAssets() {
-
+      const { width, height } = this.scale;
       const assetKeys = Object.keys(LoaderConfig); // Get asset keys
         assetKeys.forEach((key, index) => {
           // this.load.image(key, LoaderConfig[key]);
@@ -47,14 +49,27 @@ export default class Background extends Scene{
       this.load.on('start', () => {
         console.log("Loading started");
       })
-      this.load.on('progress', (value: any) => {
-        // console.log("Loading progress:", value); // More informative progress
-      });
+      this.progressBar = this.add.sprite(width / 2 - 200, height / 2 + 90, "assetsloader").setOrigin(0, 0.5);
+      this.progressBar.setCrop(0, 0, 0, this.progressBar.height); // Start with 0 width
+
+      this.load.on('progress', (value: number) => {
+        const adjustedValue = Math.min(value * this.maxProgress, this.maxProgress);
+        console.log(adjustedValue, "adjustedValue");
+        this.updateProgressBar(adjustedValue);
+    });
       this.load.on('loaderror', (file:any) => {
         console.error('Error loading sound:', file.key);
       });
       console.log("SoundsLoaded now check for complete", this.load);
     }
+
+    private updateProgressBar(value: number) {
+      const { width } = this.scale;
+      if (this.progressBar) {
+          // Update the crop width of the progress bar sprite based on the value
+          this.progressBar.setCrop(0, 0, this.progressBar.width * value, this.progressBar.height);
+      }
+  }
 
     loadSounds() {
       Object.entries(LoaderSoundConfig).forEach(([key, value]) => {
@@ -63,7 +78,7 @@ export default class Background extends Scene{
               console.log("Queued for Sound loading:", key); // Log after queuing
           }
       });
-     
+     this.updateProgressBar(1)
     }
 
     private onLoadComplete() {
@@ -106,12 +121,12 @@ export default class Background extends Scene{
 
     public loadScene() {
       // Trigger postMessage to the parent window
-      window.parent.postMessage( "authToken","*");
+       window.parent.postMessage("OnEnter", "*");
+      // Add and start MainScene
+      Globals.SceneHandler?.addScene('MainScene', MainScene, true);
+
     }
 
-    //window.parent.postMessage("OnEnter", "*");
-      // Add and start MainScene
-      
-     // Globals.SceneHandler?.addScene('MainScene', MainScene, true);
+   
 
 }

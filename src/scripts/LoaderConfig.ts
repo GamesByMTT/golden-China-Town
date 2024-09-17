@@ -34,7 +34,7 @@ export const LoaderConfig = {
     upPlnak: "src/sprites/Up.png",
     leftLanterns: "src/sprites/leftLanterns.png",
     rightLanterns: "src/sprites/rightLanterns.png",
-    messagePopup: "src/sprites/messagepopup.png",
+    messagePopupBgImage: "src/sprites/messagepopupImageBg.png",
     yesButton: "src/sprites/yesButton.png",
     yesButtonHover: "src/sprites/yesButtonHover.png",
     noButtonHover: "src/sprites/noButtonHover.png",
