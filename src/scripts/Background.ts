@@ -23,7 +23,6 @@ export default class Background extends Scene{
 
         this.load.on('complete', this.onLoadComplete, this);
       //  this.load.audio("backgroundMusic", "src/sounds/Teaser.wav")
-        
     }
     // create(){
     //     const { width, height } = this.scale;
@@ -33,15 +32,23 @@ export default class Background extends Scene{
     // }
 
     loadAssets() {
+
+      const assetKeys = Object.keys(LoaderConfig); // Get asset keys
+        assetKeys.forEach((key, index) => {
+          // this.load.image(key, LoaderConfig[key]);
+          console.log(`[${index + 1}/${assetKeys.length}] Queued:`, key);
+          // Log the asset index and key
+        });
+
       Object.entries(LoaderConfig).forEach(([key, value]) => {
         this.load.image(key, value);
-        console.log("Queued for loading:", key); // Log after queuing
+        // console.log("Queued for loading:", key); // Log after queuing
       });
       this.load.on('start', () => {
         console.log("Loading started");
       })
       this.load.on('progress', (value: any) => {
-        console.log("Loading progress:", value); // More informative progress
+        // console.log("Loading progress:", value); // More informative progress
       });
       this.load.on('loaderror', (file:any) => {
         console.error('Error loading sound:', file.key);
@@ -53,6 +60,7 @@ export default class Background extends Scene{
       Object.entries(LoaderSoundConfig).forEach(([key, value]) => {
           if (typeof value === "string") {
               this.load.audio(key, [value]); // Load sounds from LoaderSoundConfig
+              console.log("Queued for Sound loading:", key); // Log after queuing
           }
       });
      

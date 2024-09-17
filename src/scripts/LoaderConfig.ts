@@ -2,7 +2,6 @@ import { disconnect } from "process";
 
 // import { Background } from './Background';
 export const LoaderConfig = {
-    // frame : "/src/sprites/SlotMachine_3x5.png",
     Background:  "src/sprites/Background.jpg",
     spinBtn : "/src/sprites/ButtonSpin_1.png",
     spinBtnOnPressed :  "/src/sprites/ButtonSpinHover_1.png",
@@ -18,8 +17,6 @@ export const LoaderConfig = {
     lines :  "/src/sprites/PanelLines.png",
     winPanel :  "/src/sprites/PanelWin.png",    
     balancePanel :  "/src/sprites/PanelBalance.png",
-    // fireVase :  "/src/sprites/Vase.png",
-    // PanelJackpot:  "/src/sprites/PanelJackpot.png",
     MenuBtn :  "/src/sprites/ButtonMenu.png",
     MenuBtnH :  "/src/sprites/ButtonMenuHover.png",
     settingBtn :  "/src/sprites/ButtonSettings.png",
@@ -570,39 +567,11 @@ export const LoaderConfig = {
     slots14_45:  "/src/sprites/Symbols/spin/FreeSpin46.png",
     slots14_46:  "/src/sprites/Symbols/spin/FreeSpin47.png",
     slots14_47:  "/src/sprites/Symbols/spin/FreeSpin48.png",
-
-    // firesheet: "src/sprites/FireSheet.png",
-    // fire_1 :  "/src/sprites/Fire/Fire (1).png",
-    // fire_2 :  "/src/sprites/Fire/Fire (2).png",
-    // fire_3 :  "/src/sprites/Fire/Fire (3).png",
-    // fire_4 :  "/src/sprites/Fire/Fire (4).png",
-    // fire_5 :  "/src/sprites/Fire/Fire (5).png",
-    // fire_6 :  "/src/sprites/Fire/Fire (6).png",
-    // fire_7 :  "/src/sprites/Fire/Fire (7).png",
-    // fire_8 :  "/src/sprites/Fire/Fire (8).png",
-    // fire_9 :  "/src/sprites/Fire/Fire (9).png",
-    // fire_10:  "/src/sprites/Fire/Fire (10).png",
-    // fire_11:  "/src/sprites/Fire/Fire (11).png",
-    // fire_12:  "/src/sprites/Fire/Fire (12).png",
-    // fire_13:  "/src/sprites/Fire/Fire (13).png",
-    // fire_14:  "/src/sprites/Fire/Fire (14).png",
-    // fire_15:  "/src/sprites/Fire/Fire (15).png",
-    // fire_16:  "/src/sprites/Fire/Fire (16).png",
-    // fire_17:  "/src/sprites/Fire/Fire (17).png",
-    // fire_18:  "/src/sprites/Fire/Fire (18).png",
-    // fire_19:  "/src/sprites/Fire/Fire (19).png",
-    // fire_20:  "/src/sprites/Fire/Fire (20).png",
-    // fire_21:  "/src/sprites/Fire/Fire (21).png",
-    // fire_22:  "/src/sprites/Fire/Fire (22).png",
-    // fire_23:  "/src/sprites/Fire/Fire (23).png",
-    
 }
 
 
 
 export const staticData = {
-    // logoURL: "https://cccdn.b-cdn.net/1584464368856.png",
-    // logoURL:  "/static/logo.png").default,
     Background:  "src/sprites/Background.jpg",
 };
 

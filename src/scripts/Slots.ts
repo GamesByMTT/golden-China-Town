@@ -230,7 +230,6 @@ export class Slots extends Phaser.GameObjects.Container {
 
     // Function to play win animations
     playWinAnimations() {
-       
         this.resultCallBack(); // Call the result callback
         ResultData.gameData.symbolsToEmit.forEach((rowArray: any) => {
             rowArray.forEach((row: any) => {
@@ -249,7 +248,6 @@ export class Slots extends Phaser.GameObjects.Container {
     winMusic(key: string){
         this.SoundManager.playSound(key)
     }
-    
 }
 
 // @Sybols CLass

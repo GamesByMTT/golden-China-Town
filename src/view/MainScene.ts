@@ -91,6 +91,7 @@ export default class MainScene extends Scene {
         // Initialize LineSymbols
         this.lineSymbols = new LineSymbols(this, 10, 12, this.lineGenerator)
         this.mainContainer.add(this.lineSymbols)
+        this.setupFocusBlurEvents()
     }
 
     update(time: number, delta: number) {
@@ -282,6 +283,16 @@ export default class MainScene extends Scene {
                 });
                 }
             }
+        });
+    }
+
+    private setupFocusBlurEvents() {
+        window.addEventListener('blur', () => {
+                this.soundManager.stopSound('backgroundMusic');
+        });
+
+        window.addEventListener('focus', () => {
+            this.soundManager.playSound('backgroundMusic');
         });
     }
 
