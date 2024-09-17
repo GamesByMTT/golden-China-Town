@@ -17,12 +17,9 @@ export default class Background extends Scene{
       this.soundManager = new SoundManager(this) 
   }
     preload(){
-      console.log("Background Scene Load");
-      
         this.load.image("BackgroundNew", "src/sprites/NewBackground.png");
-
         this.loadAssets();
-        // this.loadSounds();
+        this.loadSounds();
 
         this.load.on('complete', this.onLoadComplete, this);
       //  this.load.audio("backgroundMusic", "src/sounds/Teaser.wav")
@@ -35,7 +32,6 @@ export default class Background extends Scene{
       //  this.backgroundMusic.play();
     }
 
-
     loadAssets() {
       Object.entries(LoaderConfig).forEach(([key, value]) => {
         this.load.image(key, value);
@@ -47,21 +43,20 @@ export default class Background extends Scene{
       this.load.on('progress', (value: any) => {
         console.log("Loading progress:", value); // More informative progress
       });
-
       this.load.on('loaderror', (file:any) => {
         console.error('Error loading sound:', file.key);
       });
       console.log("SoundsLoaded now check for complete", this.load);
     }
 
-    // loadSounds() {
-    //   Object.entries(LoaderSoundConfig).forEach(([key, value]) => {
-    //       if (typeof value === "string") {
-    //           this.load.audio(key, [value]); // Load sounds from LoaderSoundConfig
-    //       }
-    //   });
+    loadSounds() {
+      Object.entries(LoaderSoundConfig).forEach(([key, value]) => {
+          if (typeof value === "string") {
+              this.load.audio(key, [value]); // Load sounds from LoaderSoundConfig
+          }
+      });
      
-    // }
+    }
 
     private onLoadComplete() {
       console.log("All assets and sounds loading complete");
@@ -77,25 +72,24 @@ export default class Background extends Scene{
       const loadedTextures = this.textures.list;
       Globals.resources = { ...loadedTextures };
 
-      // // Load sound resources
-      // Object.entries(LoaderSoundConfig).forEach(([key]) => {
-      //     Globals.soundResources[key] = new Howl({
-      //         src: [LoaderSoundConfig[key]], // Use the same source as for loading
-      //         autoplay: false,
-      //         loop: false,
-      //     });
-      // });
-
+      // Load sound resources
+      Object.entries(LoaderSoundConfig).forEach(([key]) => {
+          Globals.soundResources[key] = new Howl({
+              src: [LoaderSoundConfig[key]], // Use the same source as for loading
+              autoplay: false,
+              loop: false,
+          });
+      });
       // Check if socket is loaded, then load the scene
       this.checkSocketAndProceed();
     }
 
     checkSocketAndProceed() {
-      console.log("Checking if socket is loaded and assets are ready...");
+      console.log("Checking if loaded and assets are ready...");
       // Continuously check if the socket is loaded
       const socketInterval = setInterval(() => {
           console.log("checking Interval");
-          if (this.isAssetsLoaded && Globals.Socket?.socketLoaded) {
+          if (this.isAssetsLoaded) {
               clearInterval(socketInterval); // Stop checking when socket is loaded
               this.loadScene();
           }
@@ -104,9 +98,12 @@ export default class Background extends Scene{
 
     public loadScene() {
       // Trigger postMessage to the parent window
-      window.parent.postMessage("OnEnter", "*");
-      // Add and start MainScene
-      Globals.SceneHandler?.addScene('MainScene', MainScene, true);
+      window.parent.postMessage( "authToken","*");
     }
+
+    //window.parent.postMessage("OnEnter", "*");
+      // Add and start MainScene
+      
+     // Globals.SceneHandler?.addScene('MainScene', MainScene, true);
 
 }

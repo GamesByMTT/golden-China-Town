@@ -79,11 +79,11 @@ export default class SoundManager {
     private setupFocusBlurEvents() {
         window.addEventListener('blur', () => {
             console.log("onBlur");
-                // this.stopSound('backgroundMusic');
+                this.stopSound('backgroundMusic');
         });
 
         window.addEventListener('focus', () => {
-            // this.playSound('backgroundMusic');
+            this.playSound('backgroundMusic');
         });
     }
 }

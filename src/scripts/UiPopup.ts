@@ -212,14 +212,10 @@ export class UiPopups extends Phaser.GameObjects.Container {
             onOff.setTexture('onButton');
             onOff.setPosition(240, -120); // Move position for 'On' state
             this.SoundManager.setSoundEnabled(this.soundEnabled)
-            // Logic to turn sound on
-            // Globals.soundManager.play("yourSound");
         } else {
             onOff.setTexture('offButton');
             onOff.setPosition(160, -120); // Move position for 'Off' state
             this.SoundManager.setSoundEnabled(this.soundEnabled)
-            // Logic to turn sound off
-            // Globals.soundManager.stop("yourSound");
         }
     }
 
@@ -230,14 +226,10 @@ export class UiPopups extends Phaser.GameObjects.Container {
             offMusic.setTexture('onButton');
             offMusic.setPosition(240, 50); // Move position for 'On' state
             this.SoundManager.setMusicEnabled(this.musicEnabled)
-
-            // Globals.soundManager.play("yourSound");
         } else {
             offMusic.setTexture('offButton');
             this.SoundManager.setMusicEnabled(this.musicEnabled);
-            offMusic.setPosition(160, 50); // Move position for 'Off' state
-            // Logic to turn sound off
-            // Globals.soundManager.stop("yourSound");
+            offMusic.setPosition(160, 50); // Move position for 'Off' state;
         }
     }
 
@@ -455,7 +447,7 @@ export class UiPopups extends Phaser.GameObjects.Container {
         }
 
     buttonMusic(key: string){
-        // this.SoundManager.playSound(key)
+        this.SoundManager.playSound(key)
     }
 
     /**

@@ -72,7 +72,7 @@ export default class MainScene extends Scene {
         // this.snow = new Phaser.GameObjects.Sprite(this, width/2, height/2.4, 'snow')
         
         this.mainContainer.add([this.stairs, up, this.columnleft, this.columnRight, leftPlank, rightPlank, bottomPlank, topPlank, this.roofTop,leftLanterns, rightLanterns, this.logo])
-        // this.soundManager.playSound("backgroundMusic")
+        this.soundManager.playSound("backgroundMusic")
 
         // Initialize UI Container
         this.uiContainer = new UiContainer(this, () => this.onSpinCallBack(), this.soundManager);
@@ -113,7 +113,7 @@ export default class MainScene extends Scene {
      */
     onSpinCallBack() {
         const onSpinMusic = "onSpin"
-        // this.soundManager.playSound(onSpinMusic)
+        this.soundManager.playSound(onSpinMusic)
         this.slot.moveReel();
         this.lineGenerator.hideLines();
     }

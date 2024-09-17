@@ -4,8 +4,6 @@ import { Globals } from "./Globals";
 import { SocketManager } from "../socket";
 import { SceneHandler } from "./SceneHandler";
 
-window.parent.postMessage( "authToken","*");
-
 if(!IS_DEV){
   window.addEventListener("message", function(event: MessageEvent) {
     // Check the message type and handle accordingly

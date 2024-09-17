@@ -151,7 +151,6 @@ export class UiContainer extends Phaser.GameObjects.Container {
         this.spinBtn = this.createButton('spinBtn', gameConfig.scale.width / 2, gameConfig.scale.height - 130, () => {
             
             // this.spinButtonSound = this.scene.sound.add("spinButton", {loop: false, volume: 0.8})
-            // this.spinButtonSound.play();
                 this.bnuttonMusic("spinButton");
             // checking if autoSpining is working or not if it is auto Spining then stop it
             if(this.isAutoSpinning){
@@ -408,7 +407,7 @@ export class UiContainer extends Phaser.GameObjects.Container {
     }
 
     bnuttonMusic(key: string){
-        // this.SoundManager.playSound(key)
+        this.SoundManager.playSound(key)
     }
     update(dt: number){
         console.log("check container");

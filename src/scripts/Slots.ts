@@ -247,7 +247,7 @@ export class Slots extends Phaser.GameObjects.Container {
     }
     // winMusic
     winMusic(key: string){
-        // this.SoundManager.playSound(key)
+        this.SoundManager.playSound(key)
     }
     
 }
