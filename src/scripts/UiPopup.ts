@@ -455,7 +455,7 @@ export class UiPopups extends Phaser.GameObjects.Container {
         }
 
     buttonMusic(key: string){
-        this.SoundManager.playSound(key)
+        // this.SoundManager.playSound(key)
     }
 
     /**

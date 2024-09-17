@@ -408,7 +408,7 @@ export class UiContainer extends Phaser.GameObjects.Container {
     }
 
     bnuttonMusic(key: string){
-        this.SoundManager.playSound(key)
+        // this.SoundManager.playSound(key)
     }
     update(dt: number){
         console.log("check container");

@@ -22,7 +22,7 @@ export default class Background extends Scene{
         this.load.image("BackgroundNew", "src/sprites/NewBackground.png");
 
         this.loadAssets();
-        this.loadSounds();
+        // this.loadSounds();
 
         this.load.on('complete', this.onLoadComplete, this);
       //  this.load.audio("backgroundMusic", "src/sounds/Teaser.wav")
@@ -38,20 +38,11 @@ export default class Background extends Scene{
 
     loadAssets() {
       Object.entries(LoaderConfig).forEach(([key, value]) => {
-          console.log(key, "Images");
-          this.load.image(key, value);
-      });
-    }
-
-    loadSounds() {
-      Object.entries(LoaderSoundConfig).forEach(([key, value]) => {
-          console.log(key, "Sounds");
-          if (typeof value === "string") {
-              this.load.audio(key, [value]); // Load sounds from LoaderSoundConfig
-          }
+        this.load.image(key, value);
+        console.log("Queued for loading:", key); // Log after queuing
       });
       this.load.on('start', () => {
-          console.log("Loading started");
+        console.log("Loading started");
       })
       this.load.on('progress', (value: any) => {
         console.log("Loading progress:", value); // More informative progress
@@ -60,9 +51,17 @@ export default class Background extends Scene{
       this.load.on('loaderror', (file:any) => {
         console.error('Error loading sound:', file.key);
       });
-      
       console.log("SoundsLoaded now check for complete", this.load);
     }
+
+    // loadSounds() {
+    //   Object.entries(LoaderSoundConfig).forEach(([key, value]) => {
+    //       if (typeof value === "string") {
+    //           this.load.audio(key, [value]); // Load sounds from LoaderSoundConfig
+    //       }
+    //   });
+     
+    // }
 
     private onLoadComplete() {
       console.log("All assets and sounds loading complete");
@@ -78,14 +77,14 @@ export default class Background extends Scene{
       const loadedTextures = this.textures.list;
       Globals.resources = { ...loadedTextures };
 
-      // Load sound resources
-      Object.entries(LoaderSoundConfig).forEach(([key]) => {
-          Globals.soundResources[key] = new Howl({
-              src: [LoaderSoundConfig[key]], // Use the same source as for loading
-              autoplay: false,
-              loop: false,
-          });
-      });
+      // // Load sound resources
+      // Object.entries(LoaderSoundConfig).forEach(([key]) => {
+      //     Globals.soundResources[key] = new Howl({
+      //         src: [LoaderSoundConfig[key]], // Use the same source as for loading
+      //         autoplay: false,
+      //         loop: false,
+      //     });
+      // });
 
       // Check if socket is loaded, then load the scene
       this.checkSocketAndProceed();

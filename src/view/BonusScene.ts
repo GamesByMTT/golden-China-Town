@@ -85,7 +85,7 @@ export default class BonusScene extends Scene{
       spinWheel(targetIndex: number) {
         const spinSound = Globals.soundResources["spinWheelMusic"];
         spinSound.rate(1);  // Ensure starting rate is 1 (normal speed)
-        spinSound.play();
+        // spinSound.play();
         
         this.canSpinBonus = false;
         
