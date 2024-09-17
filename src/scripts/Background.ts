@@ -25,12 +25,12 @@ export default class Background extends Scene{
       //  this.load.audio("backgroundMusic", "src/sounds/Teaser.wav")
         
     }
-    create(){
-        const { width, height } = this.scale;
-        this.add.image(width / 2, height / 2, 'BackgroundNew').setOrigin(0.5).setDisplaySize(width, height);
-      //  this.backgroundMusic = this.sound.add("backgroundMusic", { loop: true, volume: 0.1 });
-      //  this.backgroundMusic.play();
-    }
+    // create(){
+    //     const { width, height } = this.scale;
+    //     this.add.image(width / 2, height / 2, 'BackgroundNew').setOrigin(0.5).setDisplaySize(width, height);
+    //   //  this.backgroundMusic = this.sound.add("backgroundMusic", { loop: true, volume: 0.1 });
+    //   //  this.backgroundMusic.play();
+    // }
 
     loadAssets() {
       Object.entries(LoaderConfig).forEach(([key, value]) => {
