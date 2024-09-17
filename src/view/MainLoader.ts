@@ -13,6 +13,7 @@ export default class MainLoader extends Scene {
     private progressBox: GameObjects.Sprite | null = null;
     private logoImage: GameObjects.Sprite | null = null;
     private maxProgress: number = 0.7; // Cap progress at 70%
+    private loadingInterval: NodeJS.Timer | undefined; // Store the interval reference
     private backgroundMusic: Phaser.Sound.BaseSound | null = null; // Add a variable for background music
     public soundManager: SoundManager; // Add a SoundManager instance
 
@@ -24,7 +25,7 @@ export default class MainLoader extends Scene {
 
     preload() {
         // Load the background image first
-        // this.load.image("Background", "src/sprites/Background.jpg");
+        this.load.image("Background", "src/sprites/Background.jpg");
         this.load.image("logo", "src/sprites/chinaTown.png");
         this.load.image('loaderBg', "src/sprites/loaderBg.png")
         this.load.image("assetsloader", "src/sprites/assetsLoader.png")
@@ -36,7 +37,7 @@ export default class MainLoader extends Scene {
         });
     }
 
-    private addBackgroundImage() {
+    private addBackgroundImage() {        
         const { width, height } = this.scale;
         // this.add.image(width / 2, height / 2, 'Background').setOrigin(0.5).setDisplaySize(width, height);
         this.logoImage = this.add.sprite(width/2, 300, 'logo').setScale(0.8, 0.8)
@@ -50,26 +51,33 @@ export default class MainLoader extends Scene {
     }
 
     private startLoadingAssets() {
-        // Load all assets from LoaderConfig
+        console.log("startLoadingAssets");
+        this.load.start();
+        this.loadingInterval = setInterval(() => {
+            this.repeatAssetLoad()
+        }, 100);
+    }
+
+    private repeatAssetLoad(){
+        console.log("repeatAssetLoad");
+        this.load.start();
         Object.entries(LoaderConfig).forEach(([key, value]) => {
             this.load.image(key, value);
         });
-        // Preload all sounds from LoaderSoundConfig
         Object.entries(LoaderSoundConfig).forEach(([key, value]) => {
             if (typeof value === "string") {
                 this.load.audio(key, [value]); // Cast value to string
             }
         });
-        // Start loading assets and update progress bar
-        this.load.start();
-
         this.load.on('progress', (value: number) => {
-            // Limit progress to 70% until socket initialization is done
             const adjustedValue = Math.min(value * this.maxProgress, this.maxProgress);
             this.updateProgressBar(adjustedValue);
         });
-
         this.load.on('complete', () => {
+            if (this.loadingInterval) {
+                clearInterval(this.loadingInterval);
+                this.loadingInterval = undefined; // Optional: Reset to undefined
+            }
             if (Globals.Socket?.socketLoaded) {
                 this.loadScene();
             }
@@ -78,6 +86,7 @@ export default class MainLoader extends Scene {
 
     private updateProgressBar(value: number) {
         const { width } = this.scale;
+        console.log("updateProgressBar", value);
         if (this.progressBar) {
             // Update the crop width of the progress bar sprite based on the value
             this.progressBar.setCrop(0, 0, this.progressBar.width * value, this.progressBar.height);
