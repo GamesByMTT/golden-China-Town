@@ -27,6 +27,7 @@ export default class MainScene extends Scene {
     onSpinSound!: Phaser.Sound.BaseSound
     logo!: Phaser.GameObjects.Sprite
     private mainContainer!: Phaser.GameObjects.Container;
+
     constructor() {
         super({ key: 'MainScene' });
     }
@@ -178,57 +179,6 @@ export default class MainScene extends Scene {
     }
 
     /**
-     * @method showWinPopup
-     * @description Displays a popup showing the win amount with an increment animation and different sprites
-     * @param winAmount The amount won to display in the popup
-     * @param spriteKey The key of the sprite to display in the popup
-     */
-    showWinPopup(winAmount: number, spriteKey: string) {
-        // Create the popup background
-        const inputOverlay = this.add.rectangle(0, 0, this.cameras.main.width, this.cameras.main.height, 0x2a1820, 0.95)
-        .setOrigin(0, 0)
-        .setDepth(9) // Set depth to be below the popup but above game elements
-        .setInteractive() // Make it interactive to block all input events
-        inputOverlay.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            // Prevent default action on pointerdown to block interaction
-            pointer.event.stopPropagation();
-        });
-        let winSprite: any
-        if(spriteKey === "jackpotPopup"){
-            winSprite = this.add.sprite(this.cameras.main.centerX - 125, this.cameras.main.centerY - 250, spriteKey).setDepth(11);
-        }else if(spriteKey === "hugeWinPopup"){
-            winSprite = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY - 120, spriteKey).setDepth(11);
-        } else{
-            winSprite = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY - 50, spriteKey).setDepth(11);
-        }
-      
-        // Create the text object to display win amount
-        const winText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, '0', {
-            font: '45px',
-            color: '#000000'
-        }).setDepth(11).setOrigin(0.5);
-
-        // Tween to animate the text increment from 0 to winAmount
-        this.tweens.addCounter({
-            from: 0,
-            to: winAmount,
-            duration: 500, // Duration of the animation in milliseconds
-            onUpdate: (tween) => {
-                const value = Math.floor(tween.getValue());
-                winText.setText(value.toString());
-            },
-            onComplete: () => {
-                // Automatically close the popup after a few seconds
-                this.time.delayedCall(4000, () => {
-                    inputOverlay.destroy();
-                    winText.destroy();
-                    winSprite.destroy();
-                });
-            }
-        });
-    }
-
-    /**
      * @method freeSpinPopup
      * @description Displays a popup showing the win amount with an increment animation and different sprites
      * @param freeSpinCount The amount won to display in the popup
@@ -252,7 +202,7 @@ export default class MainScene extends Scene {
         }
         // Create the text object to display win amount
         const freeText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, '0', {
-            font: '45px',
+            font: '55px',
             color: '#000000'
         }).setDepth(11).setOrigin(0.5);
         // Tween to animate the text increment from 0 to winAmount
@@ -287,6 +237,59 @@ export default class MainScene extends Scene {
         });
     }
 
+
+    /**
+     * @method showWinPopup
+     * @description Displays a popup showing the win amount with an increment animation and different sprites
+     * @param winAmount The amount won to display in the popup
+     * @param spriteKey The key of the sprite to display in the popup
+     */
+    showWinPopup(winAmount: number, spriteKey: string) {
+        // Create the popup background
+        const inputOverlay = this.add.rectangle(0, 0, this.cameras.main.width, this.cameras.main.height, 0x2a1820, 0.95)
+        .setOrigin(0, 0)
+        .setDepth(15) // Set depth to be below the popup but above game elements
+        .setInteractive() // Make it interactive to block all input events
+        inputOverlay.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            // Prevent default action on pointerdown to block interaction
+            pointer.event.stopPropagation();
+        });
+        let winSprite: any
+        if(spriteKey === "jackpotPopup"){
+            winSprite = this.add.sprite(this.cameras.main.centerX - 125, this.cameras.main.centerY - 250, spriteKey).setDepth(15);
+        }else if(spriteKey === "hugeWinPopup"){
+            winSprite = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY - 120, spriteKey).setDepth(15);
+        } else{
+            winSprite = this.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY - 50, spriteKey).setDepth(15);
+        }
+      
+        // Create the text object to display win amount
+        const winText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, '0', {
+            font: '55px',
+            color: '#000000'
+        }).setDepth(15).setOrigin(0.5);
+
+        // Tween to animate the text increment from 0 to winAmount
+        this.tweens.addCounter({
+            from: 0,
+            to: winAmount,
+            duration: 500, // Duration of the animation in milliseconds
+            onUpdate: (tween) => {
+                const value = Math.floor(tween.getValue());
+                winText.setText(value.toString());
+            },
+            onComplete: () => {
+                // Automatically close the popup after a few seconds
+                this.time.delayedCall(4000, () => {
+                    inputOverlay.destroy();
+                    winText.destroy();
+                    winSprite.destroy();
+                });
+            }
+        });
+    }
+
+    
     private setupFocusBlurEvents() {
         window.addEventListener('blur', () => {
                 this.soundManager.stopSound('backgroundMusic');
