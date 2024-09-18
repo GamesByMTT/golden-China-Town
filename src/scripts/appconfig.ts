@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import BBCodeTextPlugin from "phaser3-rex-plugins/plugins/bbcodetext-plugin";
 import Background from "./Background";
+import MainLoader from "../view/MainLoader";
 const BASE_WIDTH = 1920;
 const BASE_HEIGHT = 1080;
 const ASPECT_RATIO = BASE_WIDTH / BASE_HEIGHT;
@@ -8,7 +9,7 @@ const ASPECT_RATIO = BASE_WIDTH / BASE_HEIGHT;
 export const gameConfig = {
     
   type: Phaser.AUTO,
-  scene: [Background],
+  scene: [MainLoader],
   scale: {
     scaleFactor: 1,
     minScaleFactor: 1,

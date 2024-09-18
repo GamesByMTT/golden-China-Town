@@ -16,7 +16,7 @@ export default class Background extends Scene{
     preload(){
       console.log("Background Scene Load");
         // this.load.image("BackgroundNew", "src/sprites/NewBackground.png");
-        window.parent.postMessage("OnEnter", "*")
+       
     }
     create(){
         const { width, height } = this.scale;
