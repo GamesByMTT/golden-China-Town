@@ -23,7 +23,6 @@ export class Slots extends Phaser.GameObjects.Container {
     private spacingY: number;
     private reelContainers: Phaser.GameObjects.Container[] = [];
     private reelTweens: Phaser.Tweens.Tween[] = []; // Array for reel tweens
-    private repetitions: number[] = [0, 0, 0, 0, 0]; // Track repetitions for each reel
     private connectionTimeout!: Phaser.Time.TimerEvent;
     constructor(scene: Phaser.Scene, uiContainer: UiContainer, callback: () => void, SoundManager : SoundManager) {
         super(scene);
@@ -185,11 +184,9 @@ export class Slots extends Phaser.GameObjects.Container {
         if (this.connectionTimeout) { 
             this.connectionTimeout.remove(false);
         }
-
         for (let j = 0; j < this.slotSymbols[reelIndex].length; j++) {
             this.slotSymbols[reelIndex][j].endTween();
          }
-       
     } 
 
     showDisconnectionScene(){

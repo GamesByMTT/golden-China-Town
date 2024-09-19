@@ -49,12 +49,12 @@ export class SocketManager {
       console.log("Connected to the server");
       this.socket.on("message", (message : any) => {
         const data = JSON.parse(message);
-        // console.log(`Message ID : ${data.id} |||||| Message Data : ${JSON.stringify(data.message)}`);
-        // console.log("Message ID", data);
-        
         if(data.id == "InitData" ) {
           if(initData.gameData.Bets.length != 0){
-            initData.UIData.symbols = data.message.UIData.payLines.symbol
+            if(Globals.SceneHandler?.getScene("Disconnection")){
+                Globals.SceneHandler.removeScene("Disconnection");
+            }
+            initData.UIData.symbols = data.message.UIData.paylines.symbol
           }
           else{
             initData.gameData = data.message.GameData;
