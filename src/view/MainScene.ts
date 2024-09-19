@@ -121,6 +121,11 @@ export default class MainScene extends Scene {
         this.lineGenerator.hideLines();
     }
 
+    onAutoSpinStop(){
+        this.uiContainer.onSpin(false);
+        this.uiContainer.spinBtn
+    }
+
     /**
      * @method recievedMessage called from MyEmitter
      * @param msgType ResultData
@@ -129,8 +134,12 @@ export default class MainScene extends Scene {
      */
     recievedMessage(msgType: string, msgParams: any) {
         if (msgType === 'ResultData') {
-            this.time.delayedCall(3000, () => {    
+            this.time.delayedCall(3500, () => {    
                 if (ResultData.gameData.isBonus) {
+                    if(this.uiContainer.isAutoSpinning){
+                        this.uiContainer.autoBetBtn.emit('pointerdown'); 
+                        this.uiContainer.autoBetBtn.emit('pointerup');
+                    }
                     Globals.SceneHandler?.addScene('BonusScene', BonusScene, true)
                 }         
                 this.uiContainer.currentWiningText.updateLabelText(ResultData.playerData.currentWining.toFixed(2));
@@ -184,7 +193,6 @@ export default class MainScene extends Scene {
      * @param spriteKey The key of the sprite to display in the popup
      */
     freeSpinPopup(freeSpinCount: number, spriteKey: string) {
-        console.log(this.uiContainer.isAutoSpinning, "AutoSpinCheck");
         
         // Create the popup background
         const inputOverlay = this.add.rectangle(0, 0, this.cameras.main.width, this.cameras.main.height, 0x2a1820, 0.95)

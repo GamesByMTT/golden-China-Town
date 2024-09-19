@@ -143,21 +143,20 @@ export class UiContainer extends Phaser.GameObjects.Container {
         this.currentBalanceText = new TextLabel(this.scene, 0, 15, currentGameData.currentBalance.toFixed(2), 27, "#ffffff");
         container.add(this.currentBalanceText);
     }
-/**
+    /**
      * @method spinBtnInit Spin the reel
      * @description this method is used for creating and spin button and on button click the a SPIn emit will be triggered to socket and will deduct the amout according to the bet
      */
     spinBtnInit(spinCallBack: () => void) {
         this.spinBtn = this.createButton('spinBtn', gameConfig.scale.width / 2, gameConfig.scale.height - 130, () => {
-            
-            // this.spinButtonSound = this.scene.sound.add("spinButton", {loop: false, volume: 0.8})
-                this.bnuttonMusic("spinButton");
-            // checking if autoSpining is working or not if it is auto Spining then stop it
-            if(this.isAutoSpinning){
-                this.autoBetBtn.emit('pointerdown'); // Simulate the pointerdown event
-                this.autoBetBtn.emit('pointerup'); // Simulate the pointerup event (if needed)
-                return;
-            }
+        // this.spinButtonSound = this.scene.sound.add("spinButton", {loop: false, volume: 0.8})
+        this.bnuttonMusic("spinButton");
+        // checking if autoSpining is working or not if it is auto Spining then stop it
+        if(this.isAutoSpinning){
+            this.autoBetBtn.emit('pointerdown'); // Simulate the pointerdown event
+            this.autoBetBtn.emit('pointerup'); // Simulate the pointerup event (if needed)
+            return;
+        }
         // tween added to scale transition
             this.scene.tweens.add({
                 targets: this.spinBtn,
@@ -309,11 +308,7 @@ export class UiContainer extends Phaser.GameObjects.Container {
             }   
         }
         if(freeSpinNumber >= 1){
-            // this.freeSpinContainer = this.scene.add.container(gameConfig.scale.width/2, gameConfig.scale.height*0.15);
-            // const freeSpinBg = this.scene.add.sprite(this.freeSpinContainer.x, this.freeSpinContainer.y, "").setScale(0.8, 0.5);
-            // const freeSpinCount = new TextLabel(this.scene, freeSpinBg.x - 20, freeSpinBg.y - 5, "Free Spin : ", 27, "#ffffff");
-            // this.freeSpinText = new TextLabel(this.scene, freeSpinBg.x + 55, freeSpinBg.y - 5, freeSpinNumber.toString(), 27, "#ffffff")
-            // this.freeSpinBgImg = freeSpinBg
+
         }else{
            
         }

@@ -7,9 +7,8 @@ export default class Disconnection extends Scene{
     popupBackground!: Phaser.GameObjects.Sprite
     quit!: Phaser.GameObjects.Sprite
     SceneBg!: Phaser.GameObjects.Sprite
-    currentPageIndex: number = 0;
     constructor(){
-        super({key: 'InfoScene'})
+        super({key: 'Disconnection'})
     }
     create(){
         const { width, height } = this.cameras.main;

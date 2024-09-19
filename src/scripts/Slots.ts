@@ -149,8 +149,6 @@ export class Slots extends Phaser.GameObjects.Container {
             this.reelTweens[reelIndex].stop(); 
         }
         const reel = this.reelContainers[reelIndex];
-        const reelDelay = 200 * reelIndex;
-        // 1. Calculate spin distance for initial spin
         const spinDistance = this.spacingY * 10; // Adjust this value for desired spin amount 
         // reel.y -= 1;
         this.reelTweens[reelIndex] = this.scene.tweens.add({
@@ -164,7 +162,7 @@ export class Slots extends Phaser.GameObjects.Container {
 
     stopReel(reelIndex: number) {
         const reel = this.reelContainers[reelIndex];
-        const reelDelay = 200 * (reelIndex + 1);
+        const reelDelay = 300 * (reelIndex + 1);
         const targetSymbolIndex = 0; // Example: Align the first symbol
         const targetY = -targetSymbolIndex * this.symbolHeight; 
         this.scene.tweens.add({
