@@ -4,6 +4,7 @@ import { gameConfig } from './appconfig';
 import { UiContainer } from './UiContainer';
 import { Easing, Tween } from "@tweenjs/tween.js"; // If using TWEEN for animations
 import SoundManager from './SoundManager';
+import Disconnection from './Disconnection';
 export class Slots extends Phaser.GameObjects.Container {
     slotMask: Phaser.GameObjects.Graphics;
     SoundManager: SoundManager
@@ -23,6 +24,7 @@ export class Slots extends Phaser.GameObjects.Container {
     private reelContainers: Phaser.GameObjects.Container[] = [];
     private reelTweens: Phaser.Tweens.Tween[] = []; // Array for reel tweens
     private repetitions: number[] = [0, 0, 0, 0, 0]; // Track repetitions for each reel
+    private connectionTimeout!: Phaser.Time.TimerEvent;
     constructor(scene: Phaser.Scene, uiContainer: UiContainer, callback: () => void, SoundManager : SoundManager) {
         super(scene);
 
@@ -131,6 +133,13 @@ export class Slots extends Phaser.GameObjects.Container {
                 this.startReelSpin(i);
             }
         }, 100);
+
+        //Setting the Timer for response wait
+        this.connectionTimeout = this.scene.time.addEvent({
+            delay: 20000, // 20 seconds (adjust as needed)
+            callback: this.showDisconnectionScene,
+            callbackScope: this // Important for the 'this' context
+        });
         this.uiContainer.maxbetBtn.disableInteractive();
     }
 
@@ -148,17 +157,14 @@ export class Slots extends Phaser.GameObjects.Container {
             targets: reel,
             y: `+=${spinDistance}`, // Spin relative to current position
             duration: 800, 
-            repeat: 10, 
+            repeat: -1, 
             onComplete: () => {},
-            // delay: reelDelay
         });
     }
-
 
     stopReel(reelIndex: number) {
         const reel = this.reelContainers[reelIndex];
         const reelDelay = 200 * (reelIndex + 1);
-        // Calculate target Y (ensure it's a multiple of symbolHeight)
         const targetSymbolIndex = 0; // Example: Align the first symbol
         const targetY = -targetSymbolIndex * this.symbolHeight; 
         this.scene.tweens.add({
@@ -178,22 +184,23 @@ export class Slots extends Phaser.GameObjects.Container {
             delay: reelDelay
         });
 
+        if (this.connectionTimeout) { 
+            this.connectionTimeout.remove(false);
+        }
+
         for (let j = 0; j < this.slotSymbols[reelIndex].length; j++) {
             this.slotSymbols[reelIndex][j].endTween();
          }
        
     } 
 
+    showDisconnectionScene(){
+        Globals.SceneHandler?.addScene("Disconnection", Disconnection, true)
+    }
+
     update(time: number, delta: number) {
         if (this.slotSymbols && this.moveSlots) {
             for (let i = 0; i < this.reelContainers.length; i++) {
-                // Update the position of the entire reel container (move the reel upwards)
-                // this.reelContainers[i].y += 2100 * delta / 1000; 
-
-                // // Seamless looping: Reset position when the top goes offscreen
-                // if (this.reelContainers[i].y >= this.maskHeight) {
-                //     this.reelContainers[i].y = this.reelContainers[i].y - this.reelContainers[i].height; 
-                // }
             }
         }
     }

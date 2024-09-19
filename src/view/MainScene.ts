@@ -129,11 +129,9 @@ export default class MainScene extends Scene {
      */
     recievedMessage(msgType: string, msgParams: any) {
         if (msgType === 'ResultData') {
-            this.time.delayedCall(1000, () => {    
+            this.time.delayedCall(3000, () => {    
                 if (ResultData.gameData.isBonus) {
-                    setTimeout(() => {
-                        Globals.SceneHandler?.addScene('BonusScene', BonusScene, true)
-                    }, 2000);
+                    Globals.SceneHandler?.addScene('BonusScene', BonusScene, true)
                 }         
                 this.uiContainer.currentWiningText.updateLabelText(ResultData.playerData.currentWining.toFixed(2));
                 currentGameData.currentBalance = ResultData.playerData.Balance;
@@ -142,7 +140,6 @@ export default class MainScene extends Scene {
                 let winAmount = ResultData.gameData.WinAmout;   
                 this.uiContainer.currentBalanceText.updateLabelText(currentGameData.currentBalance.toFixed(2));
                 const freeSpinCount = ResultData.gameData.freeSpins.count;
-                // const freeSpinCount = 5;
                 // Check if freeSpinCount is greater than 1
                 if (freeSpinCount >=1) {
                     this.freeSpinPopup(freeSpinCount, 'freeSpinPopup')
@@ -173,8 +170,10 @@ export default class MainScene extends Scene {
                    //jackpot Condition
                    this.showWinPopup(winAmount, 'jackpotPopup')
                 }
-                this.slot.stopTween();
             });
+            setTimeout(() => {
+                this.slot.stopTween();
+            }, 1000);
         }
     }
 

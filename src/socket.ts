@@ -34,8 +34,8 @@ export class SocketManager {
         gameId: "SL-GCT",
       },
       reconnectionAttempts: 5,
-      reconnectionDelay: 1000, // Initial delay between reconnection attempts (in ms)
-      reconnectionDelayMax: 5000,
+      reconnectionDelay: 10000, // Initial delay between reconnection attempts (in ms)
+      reconnectionDelayMax: 15000,
     });
     this.setupEventListeners();
   }
