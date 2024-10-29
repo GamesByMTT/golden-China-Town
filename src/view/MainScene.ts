@@ -296,14 +296,15 @@ export default class MainScene extends Scene {
         });
     }
 
-    
     private setupFocusBlurEvents() {
         window.addEventListener('blur', () => {
                 this.soundManager.stopSound('backgroundMusic');
         });
 
         window.addEventListener('focus', () => {
-            this.soundManager.playSound('backgroundMusic');
+            if(currentGameData.musicMode){
+                this.soundManager.playSound('backgroundMusic');
+            }
         });
     }
 

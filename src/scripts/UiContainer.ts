@@ -80,8 +80,8 @@ export class UiContainer extends Phaser.GameObjects.Container {
             this.mBtn.setTexture('mBtnH');
             this.mBtn.disableInteractive();
             if (!currentGameData.isMoving) {
-                currentGameData.currentBetIndex++;
-                if (currentGameData.currentBetIndex >= initData.gameData.Bets.length) {
+                currentGameData.currentBetIndex--;
+                if (currentGameData.currentBetIndex <= 0) {
                     currentGameData.currentBetIndex = 0;
                 }
                 const betAmount = initData.gameData.Bets[currentGameData.currentBetIndex];

@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { Globals, initData, TextStyle } from "./Globals";
+import { currentGameData, Globals, initData, TextStyle } from "./Globals";
 import { gameConfig } from "./appconfig";
 import { TextLabel } from "./TextLabel";
 import { UiContainer } from "./UiContainer";
@@ -73,6 +73,7 @@ export class UiPopups extends Phaser.GameObjects.Container {
         ];
         this.settingBtn = new InteractiveBtn(this.scene, settingBtnSprites, () => {
             this.buttonMusic("buttonpressed")
+            this.openPopUp()
             // setting Button
             this.openSettingPopup();
         }, 1, false); // Adjusted the position index
@@ -169,16 +170,27 @@ export class UiPopups extends Phaser.GameObjects.Container {
         if(this.soundEnabled){
             
         }
-        const initialTexture = this.soundEnabled ? "onButton" : "offButton";
-        const onOff = this.scene.add.image(240, -120, initialTexture);
+        const initialTexture = currentGameData.soundMode? "onButton" : "offButton";
+        let onOff: any
+        if(!currentGameData.soundMode){
+            onOff = this.scene.add.image(160, -120, initialTexture);
+        }else{
+            onOff = this.scene.add.image(240, -120, initialTexture);
+        }
         onOff.setInteractive()
         onOff.on('pointerdown', () => {
             this.toggleSound(onOff);
         })
 
         const toggleMusicBar = this.scene.add.image(200, 50, "toggleBar")   
-        const musicinitialTexture = this.musicEnabled ? "onButton" : "offButton";
-        const offMusic = this.scene.add.image(240, 50, musicinitialTexture)
+        const musicinitialTexture = currentGameData.musicMode ? "onButton" : "offButton";
+
+        let offMusic: any
+        if(!currentGameData.musicMode){
+            offMusic = this.scene.add.image(160, 50, musicinitialTexture);
+        }else{
+            offMusic = this.scene.add.image(240, 50, musicinitialTexture);
+        }
         offMusic.setInteractive();
         offMusic.on('pointerdown', () => {
             this.toggleMusic(offMusic)
@@ -207,6 +219,8 @@ export class UiPopups extends Phaser.GameObjects.Container {
 
     toggleSound(onOff: any) {
         // Toggle sound state
+        console.log(onOff, "onOff");
+        currentGameData.soundMode = !currentGameData.soundMode
         this.soundEnabled = !this.soundEnabled;
         if (this.soundEnabled) {
             onOff.setTexture('onButton');
@@ -221,6 +235,7 @@ export class UiPopups extends Phaser.GameObjects.Container {
 
     toggleMusic(offMusic: any) {
         // Toggle sound state
+        currentGameData.musicMode = !currentGameData.musicMode
         this.musicEnabled = !this.musicEnabled;
         if (this.musicEnabled) {
             offMusic.setTexture('onButton');
