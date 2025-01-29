@@ -89,6 +89,10 @@ export const currentGameData = {
   isMoving: false,
   soundMode: true,
   musicMode: true,
+  isAutoSpin: false,
+  bonusOpen: false,
+  turboMode: false,
+  stopButtonEnabled: false
 };
 
 export const ResultData = {

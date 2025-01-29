@@ -5,6 +5,7 @@ import { TextLabel } from './TextLabel';
 import { gameConfig } from './appconfig';
 import MainScene from '../view/MainScene';
 import SoundManager from './SoundManager';
+import { InteractiveBtn } from './InteractiveBtn';
 // Define UiContainer as a Phaser Scene class
 export class UiContainer extends Phaser.GameObjects.Container {
     SoundManager: SoundManager
@@ -20,6 +21,10 @@ export class UiContainer extends Phaser.GameObjects.Container {
     freeSpinText!: TextLabel;
     pBtn!: Phaser.GameObjects.Sprite;
     mBtn!: Phaser.GameObjects.Sprite
+    settingBtn!: InteractiveBtn;
+    rulesBtn!: InteractiveBtn;
+    infoBtn!: InteractiveBtn;
+    exitBtn!: InteractiveBtn
     public isAutoSpinning: boolean = false; // Flag to track if auto-spin is active
     mainScene!: Phaser.Scene
     fireSprite1!: Phaser.GameObjects.Sprite
@@ -40,6 +45,9 @@ export class UiContainer extends Phaser.GameObjects.Container {
         this.winBtnInit();
         this.balanceBtnInit();
         this.BetBtnInit();
+        this.settingBtnInit();
+        this.infoBtnInit();
+        this.exitButton()
         this.SoundManager = soundManager;
         // this.freeSpininit();
         // this.vaseInit();
@@ -56,7 +64,7 @@ export class UiContainer extends Phaser.GameObjects.Container {
         linePanel.setPosition(gameConfig.scale.width/6, this.maxbetBtn.y);
         // container.add(lineText);
         this.pBtn = this.createButton('pBtn', 80, 3, () => {
-            this.bnuttonMusic("buttonpressed");
+            this.buttonMusic("buttonpressed");
             this.pBtn.setTexture('pBtnH');
             this.pBtn.disableInteractive();
             if (!currentGameData.isMoving) {
@@ -76,7 +84,7 @@ export class UiContainer extends Phaser.GameObjects.Container {
         }).setDepth(0);
         container.add(this.pBtn);
         this.mBtn = this.createButton('mBtn', -80, 3, () => {
-            this.bnuttonMusic("buttonpressed");
+            this.buttonMusic("buttonpressed");
             this.mBtn.setTexture('mBtnH');
             this.mBtn.disableInteractive();
             if (!currentGameData.isMoving) {
@@ -150,7 +158,7 @@ export class UiContainer extends Phaser.GameObjects.Container {
     spinBtnInit(spinCallBack: () => void) {
         this.spinBtn = this.createButton('spinBtn', gameConfig.scale.width / 2, gameConfig.scale.height - 130, () => {
         // this.spinButtonSound = this.scene.sound.add("spinButton", {loop: false, volume: 0.8})
-        this.bnuttonMusic("spinButton");
+        this.buttonMusic("spinButton");
         // checking if autoSpining is working or not if it is auto Spining then stop it
         if(this.isAutoSpinning){
             this.autoBetBtn.emit('pointerdown'); // Simulate the pointerdown event
@@ -197,7 +205,7 @@ export class UiContainer extends Phaser.GameObjects.Container {
         this.maxbetBtn =  new Phaser.GameObjects.Sprite(this.scene, 0, 0, 'maxBetBtn');
         this.maxbetBtn = this.createButton('maxBetBtn', gameConfig.scale.width / 2 - this.maxbetBtn.width / 1.7, gameConfig.scale.height - this.maxbetBtn.height - 5 , () => {
             if (this.SoundManager) {
-                this.bnuttonMusic("buttonpressed");
+                this.buttonMusic("buttonpressed");
             }
             this.scene.tweens.add({
                 targets: this.maxbetBtn,
@@ -401,7 +409,49 @@ export class UiContainer extends Phaser.GameObjects.Container {
         }        
     }
 
-    bnuttonMusic(key: string){
+     settingBtnInit() {
+            const settingBtnSprites = [
+                this.scene.textures.get('settingBtn'),
+                this.scene.textures.get('settingBtnH')
+            ];
+            this.settingBtn = new InteractiveBtn(this.scene, settingBtnSprites, () => {
+                this.buttonMusic("buttonpressed")
+                // this.openPopUp()
+                // setting Button
+                // this.openSettingPopup();
+            }, 1, true); // Adjusted the position index
+            this.settingBtn.setPosition(gameConfig.scale.width/ 2 - this.settingBtn.width * 5, this.settingBtn.height * 0.7).setScale(0.8);
+            this.add(this.settingBtn);
+    }
+
+    exitButton(){
+            const exitButtonSprites = [
+                this.scene.textures.get('exitButton'),
+                this.scene.textures.get('exitButtonPressed')
+            ];
+            this.exitBtn = new InteractiveBtn(this.scene, exitButtonSprites, ()=>{
+                    this.buttonMusic("buttonpressed")
+                    // this.openLogoutPopup();
+            }, 0, true, );
+            this.exitBtn.setPosition(gameConfig.scale.width - this.exitBtn.width * 0.8, this.exitBtn.height * 0.5).setScale(0.7, 0.7)
+            this.add(this.exitBtn)
+    }
+
+    infoBtnInit() {
+            const infoBtnSprites = [
+                this.scene.textures.get('infoBtn'),
+                this.scene.textures.get('infoBtnH'),
+            ];
+            this.infoBtn = new InteractiveBtn(this.scene, infoBtnSprites, () => {
+                // info button 
+                this.buttonMusic("buttonpressed")
+                // this.openInfoPopup();
+            }, 2, true); // Adjusted the position index
+            this.infoBtn.setPosition(gameConfig.scale.width/ 2 - this.infoBtn.width * 5, this.infoBtn.height * 0.7).setScale(0.8);
+            this.add(this.infoBtn);
+    }
+
+    buttonMusic(key: string){
         this.SoundManager.playSound(key)
     }
     update(dt: number){
