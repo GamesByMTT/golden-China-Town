@@ -6,6 +6,7 @@ import { LoaderConfig, LoaderSoundConfig } from "../scripts/LoaderConfig";
 import { Globals } from "../scripts/Globals";
 import SoundManager from "../scripts/SoundManager";
 import { Howl } from "howler";
+import WebFont from "webfontloader";
 
 export default class MainLoader extends Scene {
     resources: any;
@@ -49,6 +50,7 @@ export default class MainLoader extends Scene {
             this.addBackgroundImage();
             this.startLoadingAssets();
         });
+        this.setupFontLoader();
     }
 
     private addBackgroundImage() {
@@ -183,6 +185,18 @@ export default class MainLoader extends Scene {
                 this.loadScene();
             }
         });       
+    }
+
+    private setupFontLoader() {
+        WebFont.load({
+            custom: {
+                families: ['Serat'],
+                urls: ['src/fonts/Serat-Ultra.ttf']
+            },
+            active: () => {
+                // Fonts have loaded
+            }
+        });
     }
 
     private completeLoading() {

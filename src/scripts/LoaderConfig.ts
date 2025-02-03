@@ -72,6 +72,9 @@ export const LoaderConfig = {
     settingText: "src/sprites/SettingButton.png",
     InfoPopupBg: "src/sprites/infoBg.jpg",
     disconnectClose: "src/sprites/disconnectClose.png",
+    stopButton: "src/sprites/stopButton.png",
+
+    turboSpin: "src/sprites/turboSpin.png",
 
     turboButton0: "src/sprites/turboButton0.png",
     turboButton1: "src/sprites/turboButton1.png",

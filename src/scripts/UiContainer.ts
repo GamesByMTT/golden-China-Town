@@ -6,9 +6,11 @@ import { gameConfig } from './appconfig';
 import MainScene from '../view/MainScene';
 import SoundManager from './SoundManager';
 import { InteractiveBtn } from './InteractiveBtn';
+import { PopupManager } from './PopupManager';
 // Define UiContainer as a Phaser Scene class
 export class UiContainer extends Phaser.GameObjects.Container {
     SoundManager: SoundManager
+    popupManager: PopupManager
     spinBtn!: Phaser.GameObjects.Sprite;
     maxbetBtn!: Phaser.GameObjects.Sprite;
     autoBetBtn!: Phaser.GameObjects.Sprite;
@@ -33,14 +35,21 @@ export class UiContainer extends Phaser.GameObjects.Container {
     freeSpinContainer!: Phaser.GameObjects.Container
     spinButtonSound!: Phaser.Sound.BaseSound
     normalButtonSound!: Phaser.Sound.BaseSound
+    turboSprite!: Phaser.GameObjects.Sprite;
+    turboMode: boolean = false
+    turboAnimation: Phaser.Types.Animations.AnimationFrame[] = []
+    stopButton!: GameObjects.Sprite
+    public isSpinning: boolean = false
 
     constructor(scene: Scene, spinCallBack: () => void, soundManager: SoundManager) {
         super(scene);
         scene.add.existing(this); 
+        this.popupManager = new PopupManager(scene);
         // Initialize UI elements
         this.maxBetInit();
-        this.spinBtnInit(spinCallBack);
         this.autoSpinBtnInit(spinCallBack);
+        this.spinBtnInit(spinCallBack);
+        
         this.lineBtnInit();
         this.winBtnInit();
         this.balanceBtnInit();
@@ -48,9 +57,49 @@ export class UiContainer extends Phaser.GameObjects.Container {
         this.settingBtnInit();
         this.infoBtnInit();
         this.exitButton()
+        this.turboButton();
+        this.stopSpinButton()
         this.SoundManager = soundManager;
+        this.scene.events.on("freeSpin", () => this.freeSpinStart(spinCallBack), this)
+        this.scene.events.on("updateWin", this.updateData, this)
+        this.scene.events.on("stopButtonStateChange", this.hideStopButton, this)
+        // this.scene.events.on("feeSpinPopup", this.freeSpinPopupShow, this)
         // this.freeSpininit();
         // this.vaseInit();
+    }
+
+     //turbo Button
+     turboButton(){
+        const container = this.scene.add.container(gameConfig.scale.width * 0.85, gameConfig.scale.height * 0.68)
+        this.turboSprite = this.scene.add.sprite(0, 0, "turboSpin").setOrigin(0.5).setScale(0.5).setInteractive()
+       
+        this.turboSprite.on("pointerdown", ()=>{
+            this.turboSprite.setScale(0.55)
+            this.addFrames()
+            currentGameData.turboMode = !currentGameData.turboMode
+            if(currentGameData.turboMode){
+                this.turboSprite.play('turboSpin')
+            }else{
+                this.turboSprite.stop()
+                this.turboAnimation = []
+                this.turboSprite.setTexture('turboSpin')
+            }
+        })
+        this.turboSprite.on("pointerup", ()=>{
+            this.turboSprite.setScale(0.58)
+        })
+        container.add([this.turboSprite])
+    }
+    addFrames(){
+        for(let p = 0; p < 40; p++){
+            this.turboAnimation.push({key: `turboButton${p}`});
+        }
+        this.scene.anims.create({
+            key: 'turboSpin',
+            frames: this.turboAnimation,
+            frameRate: 40,
+            repeat: -1
+        })
     }
 
     /**
@@ -151,6 +200,20 @@ export class UiContainer extends Phaser.GameObjects.Container {
         this.currentBalanceText = new TextLabel(this.scene, 0, 15, currentGameData.currentBalance.toFixed(2), 27, "#ffffff");
         container.add(this.currentBalanceText);
     }
+
+    /**
+     * @method stopSpinButton stop button functionality
+     * @description this method draw stop button when spin button is pressed
+     */
+    stopSpinButton(){
+        const container = this.scene.add.container(gameConfig.scale.width * 0.5, gameConfig.scale.height - 130)
+        this.stopButton = this.scene.add.sprite(0, 0, "stopButton").setInteractive().setVisible(false)
+        this.stopButton.on("pointerdown", ()=>{
+            currentGameData.stopButtonEnabled = !currentGameData.stopButtonEnabled
+            this.scene.events.emit("stopImmediately")
+        })
+        container.add(this.stopButton)
+    }
     /**
      * @method spinBtnInit Spin the reel
      * @description this method is used for creating and spin button and on button click the a SPIn emit will be triggered to socket and will deduct the amout according to the bet
@@ -160,41 +223,145 @@ export class UiContainer extends Phaser.GameObjects.Container {
         // this.spinButtonSound = this.scene.sound.add("spinButton", {loop: false, volume: 0.8})
         this.buttonMusic("spinButton");
         // checking if autoSpining is working or not if it is auto Spining then stop it
-        if(this.isAutoSpinning){
-            this.autoBetBtn.emit('pointerdown'); // Simulate the pointerdown event
-            this.autoBetBtn.emit('pointerup'); // Simulate the pointerup event (if needed)
+        if(currentGameData.isAutoSpin){
+            currentGameData.isAutoSpin = !currentGameData.isAutoSpin
             return;
         }
-        // tween added to scale transition
-            this.scene.tweens.add({
-                targets: this.spinBtn,
-                scaleX: 1,
-                scaleY: 1,
-                duration: 100,
-                onComplete: () => {
-                    // Send message and update the balance
-                    Globals.Socket?.sendMessage("SPIN", { currentBet: currentGameData.currentBetIndex, currentLines: 20, spins: 1 });
-                    currentGameData.currentBalance -= initData.gameData.Bets[currentGameData.currentBetIndex];
-                    this.currentBalanceText.updateLabelText(currentGameData.currentBalance.toFixed(2));
-                    // Trigger the spin callback
-                    this.onSpin(true);
-                    spinCallBack();
+        const balance = parseFloat(this.currentBalanceText.text);
+        const balanceendValue = balance - (initData.gameData.Bets[currentGameData.currentBetIndex] * initData.gameData.Lines.length);
+        // Create the tween
+        this.scene.tweens.add({
+            targets: { value: balance },
+            value: balanceendValue,
+            duration: 500, // Duration in milliseconds
+            ease: 'Linear',
+            onUpdate: (tween) => {
+                // Update the text during the tween
+                const currentBalance = tween.getValue();
+                this.currentBalanceText.updateLabelText(currentBalance.toFixed(3).toString());
+            },
+            onComplete: () => {
+                // Ensure final value is exact
+                this.currentBalanceText.updateLabelText(balanceendValue.toFixed(3).toString());
+            }
+        });
+    // tween added to scale transition
+        this.scene.tweens.add({
+            targets: this.spinBtn,
+            scaleX: 1.1,
+            scaleY: 1.1,
+            duration: 100,
+            onComplete: () => {
+                this.startSpining(spinCallBack)
+                // Scale back to original size 
+                this.scene.tweens.add({
+                    targets: this.spinBtn,
+                    scaleX: 1,
+                    scaleY: 1,
+                    duration: 100,
+                    onComplete: () => {
+                        
+                    }
+                });
+                // 
+            }
+        });
+        });
 
-                    // Scale back to original size 
-                    this.scene.tweens.add({
-                        targets: this.spinBtn,
-                        scaleX: 0.8,
-                        scaleY: 0.8,
-                        duration: 100,
-                        onComplete: () => {
-                            
-                        }
-                    });
-                    // 
-                }
+    }
+
+      /**
+     * @method autoSpinBtnInit 
+     * @param spinCallBack 
+     * @description crete and auto spin button and on that spin button click it change the sprite and called a recursive function and update the balance accroding to that
+     */
+      autoSpinBtnInit(spinCallBack: () => void) {
+        this.autoBetBtn = new Phaser.GameObjects.Sprite(this.scene, 0, 0, "autoSpin");
+
+        const autoPlay = [
+            this.scene.textures.get("autoSpin"),
+            this.scene.textures.get("autoSpin")
+        ]
+        this.autoBetBtn = new InteractiveBtn(this.scene, autoPlay, ()=>{
+            currentGameData.isAutoSpin = !currentGameData.isAutoSpin
+            if(!currentGameData.isAutoSpin){
+                this.isSpinning = false
+                return
+            }else{
+                this.buttonMusic("buttonpressed")
+                this.freeSpinStart(spinCallBack)
+            }
+        }, 7, true);
+        console.log(gameConfig.scale.width / 2 + this.autoBetBtn.width / 1.7, gameConfig.scale.height - this.autoBetBtn.height - 5, "ffgbfhbgf");
+        
+
+        // this.autoBetBtn = this.createButton(
+        //     'autoSpin',
+        //     gameConfig.scale.width / 2 + this.autoBetBtn.width / 1.7,
+        //     gameConfig.scale.height - this.autoBetBtn.height - 5,
+        //     () => {
+        //         this.normalButtonSound = this.scene.sound.add("buttonpressed", {
+        //             loop: false,
+        //             volume: 0.8
+        //         })
+        //         this.normalButtonSound.play()
+        //         this.scene.tweens.add({
+        //             targets: this.autoBetBtn,
+        //             scaleX: 1.2,
+        //             scaleY: 1.2,
+        //             duration: 100,
+        //             onComplete: () =>{
+        //                 this.isAutoSpinning = !this.isAutoSpinning; // Toggle auto-spin state
+        //                 if (this.isAutoSpinning && currentGameData.currentBalance > 0) {
+        //                     Globals.Socket?.sendMessage("SPIN", {
+        //                         currentBet: currentGameData.currentBetIndex,
+        //                         currentLines : 20
+        //                     });
+        //                     currentGameData.currentBalance -= initData.gameData.Bets[currentGameData.currentBetIndex];
+        //                     this.currentBalanceText.updateLabelText(currentGameData.currentBalance.toFixed(2));
+        //                     this.autoSpinRec(true)
+        //                     spinCallBack(); // Callback to indicate the spin has started
+        //                     // Start the spin recursion
+        //                     this.startSpinRecursion(spinCallBack);
+        //                 } else {
+        //                     // Stop the spin if auto-spin is turned off
+        //                     this.autoSpinRec(false);
+        //                 }
+        //                 this.scene.tweens.add({
+        //                     targets: this.autoBetBtn,
+        //                     scaleX: 0.8,
+        //                     scaleY: 0.8,
+        //                     duration: 100,
+        //                     onComplete: () => {
+        //                         // this.spinBtn.setTexture('spinBtn');
+        //                     }
+        //                 });
+        //             }
+        //         })
+        //     }
+        // );
+    }
+
+    freeSpinStart(spinCallBack: () => void){
+        currentGameData.bonusOpen = false
+        if(currentGameData.isAutoSpin || ResultData.gameData.freeSpins.count > 0){
+            if(ResultData.gameData.freeSpins.count > 0){
+                
+            }
+            this.isSpinning = true;
+            this.onSpin(true)
+            Globals.Socket?.sendMessage("SPIN", { 
+                currentBet: currentGameData.currentBetIndex, 
+                currentLines: initData.gameData.Lines.length, 
+                spins: 1 
             });
-        }).setDepth(1);
-
+            spinCallBack();
+        }
+        
+            // Reset the flag after some time or when spin completes
+        // setTimeout(() => {
+        //     this.isSpinning = false;
+        // }, 1200); // Adjust timeout as needed
     }
 
     /**
@@ -234,62 +401,6 @@ export class UiContainer extends Phaser.GameObjects.Container {
         
         }).setDepth(0);      
     }
-
-
-    /**
-     * @method autoSpinBtnInit 
-     * @param spinCallBack 
-     * @description crete and auto spin button and on that spin button click it change the sprite and called a recursive function and update the balance accroding to that
-     */
-    autoSpinBtnInit(spinCallBack: () => void) {
-        this.autoBetBtn = new Phaser.GameObjects.Sprite(this.scene, 0, 0, "autoSpin");
-        this.autoBetBtn = this.createButton(
-            'autoSpin',
-            gameConfig.scale.width / 2 + this.autoBetBtn.width / 1.7,
-            gameConfig.scale.height - this.autoBetBtn.height - 5,
-            () => {
-                this.normalButtonSound = this.scene.sound.add("buttonpressed", {
-                    loop: false,
-                    volume: 0.8
-                })
-                this.normalButtonSound.play()
-                this.scene.tweens.add({
-                    targets: this.autoBetBtn,
-                    scaleX: 1.2,
-                    scaleY: 1.2,
-                    duration: 100,
-                    onComplete: () =>{
-                        this.isAutoSpinning = !this.isAutoSpinning; // Toggle auto-spin state
-                        if (this.isAutoSpinning && currentGameData.currentBalance > 0) {
-                            Globals.Socket?.sendMessage("SPIN", {
-                                currentBet: currentGameData.currentBetIndex,
-                                currentLines : 20
-                            });
-                            currentGameData.currentBalance -= initData.gameData.Bets[currentGameData.currentBetIndex];
-                            this.currentBalanceText.updateLabelText(currentGameData.currentBalance.toFixed(2));
-                            this.autoSpinRec(true)
-                            spinCallBack(); // Callback to indicate the spin has started
-                            // Start the spin recursion
-                            this.startSpinRecursion(spinCallBack);
-                        } else {
-                            // Stop the spin if auto-spin is turned off
-                            this.autoSpinRec(false);
-                        }
-                        this.scene.tweens.add({
-                            targets: this.autoBetBtn,
-                            scaleX: 0.8,
-                            scaleY: 0.8,
-                            duration: 100,
-                            onComplete: () => {
-                                // this.spinBtn.setTexture('spinBtn');
-                            }
-                        });
-                    }
-                })
-            }
-        ).setDepth(0);
-    }
-
     /**
      * @method BetBtnInit 
      * @description this method is used to create the bet Button which will show the totla bet which is placed and also the plus and minus button to increase and decrese the bet value
@@ -320,6 +431,54 @@ export class UiContainer extends Phaser.GameObjects.Container {
         }else{
            
         }
+    }
+
+    // freeSpinPopupShow(){
+    //     this.freeSpinText.updateLabelText((ResultData.gameData.freeSpins.count).toString())
+    //     if(ResultData.gameData.freeSpins.count > 0){
+    //         if(currentGameData.freeSpinPopup){
+
+    //         }else{
+    //             currentGameData.freeSpinPopup = true
+    //             // this.freeSpinConatiner.setVisible(true)
+    //             // this.scene.time.delayedCall(1000, ()=>{
+    //             //     this.scene.tweens.add({
+    //             //         targets: this.freeSpinConatiner,
+    //             //         scale: {from: 1, to: 0.4},
+    //             //         x: {from: this.freeSpinConatiner.x, to: gameConfig.scale.width * 0.1},
+    //             //         y: {from: this.freeSpinConatiner.y, to: gameConfig.scale.height * 0.32},
+    //             //         duration: 700,
+    //             //         ease: "Back.easeOut"
+    //             //     })
+    //             // })
+                
+    //         }
+    //     }else{
+    //         this.scene.time.delayedCall(1000, ()=>{
+    //             currentGameData.freeSpinPopup = false;
+    //             // this.freeSpinConatiner.setPosition(gameConfig.scale.width / 2, gameConfig.scale.height/2)
+    //             // this.freeSpinConatiner.setScale(1)
+    //             // this.freeSpinConatiner.setVisible(false);
+    //         })
+    //     }        
+    // }
+
+    startSpining(spinCallBack: () => void){
+        if(!currentGameData.turboMode){
+            this.stopButton.setVisible(true)
+        }
+        this.isSpinning = true;
+        this.onSpin(true)
+        Globals.Socket?.sendMessage("SPIN", { 
+                currentBet: currentGameData.currentBetIndex, 
+                currentLines: initData.gameData.Lines.length, 
+                spins: 1 
+        });
+        spinCallBack();
+        // Reset the flag after some time or when spin completes
+        setTimeout(() => {
+            this.isSpinning = false;
+        }, 1200); // Adjust timeout as needed
     }
     /**
      * @method startSpinRecursion
@@ -416,11 +575,12 @@ export class UiContainer extends Phaser.GameObjects.Container {
             ];
             this.settingBtn = new InteractiveBtn(this.scene, settingBtnSprites, () => {
                 this.buttonMusic("buttonpressed")
+                this.popupManager.showSettingPopup()
                 // this.openPopUp()
                 // setting Button
                 // this.openSettingPopup();
             }, 1, true); // Adjusted the position index
-            this.settingBtn.setPosition(gameConfig.scale.width/ 2 - this.settingBtn.width * 5, this.settingBtn.height * 0.7).setScale(0.8);
+            this.settingBtn.setPosition(gameConfig.scale.width * 0.15, gameConfig.scale.height * 0.65).setScale(0.8);
             this.add(this.settingBtn);
     }
 
@@ -431,9 +591,10 @@ export class UiContainer extends Phaser.GameObjects.Container {
             ];
             this.exitBtn = new InteractiveBtn(this.scene, exitButtonSprites, ()=>{
                     this.buttonMusic("buttonpressed")
+                    this.popupManager.showLogoutPopup();
                     // this.openLogoutPopup();
             }, 0, true, );
-            this.exitBtn.setPosition(gameConfig.scale.width - this.exitBtn.width * 0.8, this.exitBtn.height * 0.5).setScale(0.7, 0.7)
+            this.exitBtn.setPosition(gameConfig.scale.width * 0.76, gameConfig.scale.height * 0.11).setScale(1.2)
             this.add(this.exitBtn)
     }
 
@@ -446,13 +607,71 @@ export class UiContainer extends Phaser.GameObjects.Container {
                 // info button 
                 this.buttonMusic("buttonpressed")
                 // this.openInfoPopup();
+                this.popupManager.showInfoPopup();
             }, 2, true); // Adjusted the position index
-            this.infoBtn.setPosition(gameConfig.scale.width/ 2 - this.infoBtn.width * 5, this.infoBtn.height * 0.7).setScale(0.8);
+            this.infoBtn.setPosition(gameConfig.scale.width * 0.15, gameConfig.scale.height * 0.75).setScale(0.8);
             this.add(this.infoBtn);
+    }
+
+    updateData(){
+        const startValue = parseFloat(this.currentBalanceText.text);
+        const endValue = ResultData.playerData.Balance;
+        // Create the tween
+        this.scene.tweens.add({
+            targets: { value: startValue },
+            value: endValue,
+            duration: 1000, // Duration in milliseconds
+            ease: 'Linear',
+            onUpdate: (tween) => {
+                // Update the text during the tween
+                const currentValue = tween.getValue();
+                this.currentBalanceText.updateLabelText(currentValue.toFixed(3).toString());
+            },
+            onComplete: () => {
+                this.currentBalanceText.updateLabelText(endValue.toFixed(3).toString());
+            }
+        });
+
+        //Animation for win Text
+        const winStart = parseFloat(this.currentWiningText.text);
+        const winendValue = ResultData.playerData.currentWining;
+        // Create the tween
+        this.scene.tweens.add({
+            targets: { value: winStart },
+            value: winendValue,
+            duration: 500, // Duration in milliseconds
+            ease: 'Linear',
+            onUpdate: (tween) => {
+                // Update the text during the tween
+                const currentWinValue = tween.getValue();
+                this.currentWiningText.updateLabelText(currentWinValue.toFixed(3).toString());
+            },
+            onComplete: () => {
+                // Ensure final value is exact
+                this.currentWiningText.updateLabelText(winendValue.toFixed(3).toString());
+            }
+        });
+       
+        if (ResultData.gameData.isBonus) {
+            currentGameData.bonusOpen = true;
+            this.scene.events.emit("bonusStateChanged", true);
+            // this.popupManager.showBonusPopup({
+            //     onClose: () => {
+            //         currentGameData.bonusOpen = false;
+            //         this.scene.events.emit("bonusStateChanged", false);
+            //     }
+            // });
+        }
     }
 
     buttonMusic(key: string){
         this.SoundManager.playSound(key)
+    }
+
+    hideStopButton(){
+        setTimeout(() => {
+            this.stopButton.setVisible(false)
+        }, 500);
     }
     update(dt: number){
         console.log("check container");

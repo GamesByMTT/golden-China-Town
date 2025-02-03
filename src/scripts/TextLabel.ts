@@ -4,7 +4,7 @@ import {TextStyle as globalTextStyle} from './Globals'
 export class TextLabel extends GameObjects.Text {
     defaultColor: string;
 
-    constructor(scene: Scene, x: number, y: number, textToShow: string, size: number, defaultColor: string = '#ffffff', font: string = 'Inter') {
+    constructor(scene: Scene, x: number, y: number, textToShow: string, size: number, defaultColor: string = '#ffffff', font: string = 'Serat') {
         const style = {
             ...globalTextStyle,
             fontFamily: font,

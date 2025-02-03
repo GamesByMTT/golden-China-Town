@@ -2,7 +2,7 @@ import { Scene, GameObjects, Scale } from 'phaser';
 import { Slots } from '../scripts/Slots';
 import { UiContainer } from '../scripts/UiContainer';
 import { LineGenerator, Lines } from '../scripts/Lines';
-import { UiPopups } from '../scripts/UiPopup';
+// import { UiPopups } from '../scripts/UiPopup';
 import LineSymbols from '../scripts/LineSymbols';
 import { Globals, ResultData, currentGameData, initData } from '../scripts/Globals';
 import { gameConfig } from '../scripts/appconfig';
@@ -22,7 +22,7 @@ export default class MainScene extends Scene {
     lineGenerator!: LineGenerator;
     soundManager!: SoundManager
     uiContainer!: UiContainer;
-    uiPopups!: UiPopups;
+    // uiPopups!: UiPopups;
     lineSymbols!: LineSymbols
     onSpinSound!: Phaser.Sound.BaseSound
     logo!: Phaser.GameObjects.Sprite
@@ -86,9 +86,9 @@ export default class MainScene extends Scene {
         this.lineGenerator = new LineGenerator(this, this.slot.slotSymbols[0][0].symbol.height, this.slot.slotSymbols[0][0].symbol.width).setScale(0.8, 0.8);
         this.mainContainer.add([this.lineGenerator, this.slot]);
 
-        // Initialize UI Popups
-        this.uiPopups = new UiPopups(this, this.uiContainer, this.soundManager);
-        this.mainContainer.add(this.uiPopups)
+        // // Initialize UI Popups
+        // this.uiPopups = new UiPopups(this, this.uiContainer, this.soundManager);
+        // this.mainContainer.add(this.uiPopups)
 
         // Initialize LineSymbols
         this.lineSymbols = new LineSymbols(this, 10, 12, this.lineGenerator)

@@ -92,7 +92,8 @@ export const currentGameData = {
   isAutoSpin: false,
   bonusOpen: false,
   turboMode: false,
-  stopButtonEnabled: false
+  stopButtonEnabled: false,
+  freeSpinPopup: false
 };
 
 export const ResultData = {

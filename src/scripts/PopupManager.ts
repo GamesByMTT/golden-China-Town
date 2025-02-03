@@ -3,12 +3,13 @@ import { DisconnectionPopup } from "./Popups/Disconnection";
 import InfoPopup from "./Popups/InfoPopup";
 import LogoutPopup from "./Popups/LogoutPopup";
 import { BonusPopup } from "./Popups/BonusPopup";
+import { SettingPopup } from "./Popups/SettingPopup";
 
 export class PopupManager {
     private scene: Scene;
     private popupContainer: GameObjects.Container;
     private overlay: Phaser.GameObjects.Rectangle;
-    private currentPopup: InfoPopup | BonusPopup | InfoPopup | LogoutPopup | null = null
+    private currentPopup: InfoPopup | BonusPopup | InfoPopup | LogoutPopup | SettingPopup | null = null
 
     constructor(scene: Scene){
         this.scene = scene;
@@ -51,6 +52,13 @@ export class PopupManager {
     showLogoutPopup(){
         this.closeCurrentPopup();
         this.currentPopup = new LogoutPopup(this.scene);
+        this.popupContainer.add(this.currentPopup);
+        this.popupContainer.setVisible(true);
+    }
+
+    showSettingPopup(){
+        this.closeCurrentPopup();
+        this.currentPopup = new SettingPopup(this.scene);
         this.popupContainer.add(this.currentPopup);
         this.popupContainer.setVisible(true);
     }
