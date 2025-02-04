@@ -12,6 +12,7 @@ export class TextLabel extends GameObjects.Text {
             color: defaultColor,
             fill: defaultColor,
             align: 'center',
+            
         };
         super(scene, x, y, textToShow, style);
     

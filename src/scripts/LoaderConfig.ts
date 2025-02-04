@@ -54,7 +54,7 @@ export const LoaderConfig = {
     stairs: "src/sprites/Stair.png",
     reelBg: "src/sprites/reelBg.png",   
     column: "src/sprites/columnLeft.png",
-    snow: "src/sprites/Snow.png",
+
     roof:"src/sprites/Roof.png",
     winLine: "src/sprites/WinLine.png",
     settingPopup:"src/sprites/settingPopup.png",

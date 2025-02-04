@@ -18,7 +18,7 @@ export default class MainScene extends Scene {
     columnleft!: Phaser.GameObjects.Sprite
     columnRight!: Phaser.GameObjects.Sprite
     roofTop!: Phaser.GameObjects.Sprite
-    snow!: Phaser.GameObjects.Sprite  
+  
     lineGenerator!: LineGenerator;
     soundManager!: SoundManager
     uiContainer!: UiContainer;
@@ -70,8 +70,6 @@ export default class MainScene extends Scene {
         const up = new Phaser.GameObjects.Sprite(this, width/2, this.roofTop.height + 15, "upPlnak")
         const leftLanterns = new Phaser.GameObjects.Sprite(this, this.columnleft.x - 100, height/2 - 400, "leftLanterns").setOrigin(0.5)
         const rightLanterns = new Phaser.GameObjects.Sprite(this, this.columnRight.x + 100, height/2 - 400, "rightLanterns").setOrigin(0.5)
-
-        // this.snow = new Phaser.GameObjects.Sprite(this, width/2, height/2.4, 'snow')
         
         this.mainContainer.add([this.stairs, up, this.columnleft, this.columnRight, leftPlank, rightPlank, bottomPlank, topPlank, this.roofTop,leftLanterns, rightLanterns, this.logo])
         this.soundManager.playSound("backgroundMusic")
@@ -142,26 +140,26 @@ export default class MainScene extends Scene {
                     }
                     Globals.SceneHandler?.addScene('BonusScene', BonusScene, true)
                 }         
-                this.uiContainer.currentWiningText.updateLabelText(ResultData.playerData.currentWining.toFixed(2));
+                // this.uiContainer.currentWiningText.updateLabelText(ResultData.playerData.currentWining.toFixed(2));
                 currentGameData.currentBalance = ResultData.playerData.Balance;
                 let betValue = (initData.gameData.Bets[currentGameData.currentBetIndex]) * 20
                 let jackpot = ResultData.gameData.jackpot
                 let winAmount = ResultData.gameData.WinAmout;   
-                this.uiContainer.currentBalanceText.updateLabelText(currentGameData.currentBalance.toFixed(2));
+                // this.uiContainer.currentBalanceText.updateLabelText(currentGameData.currentBalance.toFixed(2));
                 const freeSpinCount = ResultData.gameData.freeSpins.count;
                 // Check if freeSpinCount is greater than 1
                 if (freeSpinCount >=1) {
-                    this.freeSpinPopup(freeSpinCount, 'freeSpinPopup')
-                    this.uiContainer.freeSpininit(freeSpinCount)
-                    this.tweens.add({
-                        targets: this.uiContainer.freeSpinText,
-                        scaleX: 1.3, 
-                        scaleY: 1.3, 
-                        duration: 800, // Duration of the scale effect
-                        yoyo: true, 
-                        repeat: -1, 
-                        ease: 'Sine.easeInOut' // Easing function
-                    });
+                    // this.freeSpinPopup(freeSpinCount, 'freeSpinPopup')
+                    // this.uiContainer.freeSpininit(freeSpinCount)
+                    // this.tweens.add({
+                    //     targets: this.uiContainer.freeSpinText,
+                    //     scaleX: 1.3, 
+                    //     scaleY: 1.3, 
+                    //     duration: 800, // Duration of the scale effect
+                    //     yoyo: true, 
+                    //     repeat: -1, 
+                    //     ease: 'Sine.easeInOut' // Easing function
+                    // });
                 } else {
                     // If count is 1 or less, ensure text is scaled normally
                     this.uiContainer.freeSpininit(freeSpinCount)

@@ -1,5 +1,5 @@
 import Phaser, { Scene } from "phaser";
-import { Globals, initData, ResultData } from "../scripts/Globals";
+import { Globals, initData, ResultData, currentGameData } from "../scripts/Globals";
 import { gameConfig } from "../scripts/appconfig";
 import SoundManager from "../scripts/SoundManager";
 let values = initData.gameData.BonusData
@@ -13,7 +13,6 @@ export default class BonusScene extends Scene{
     roofTop!: Phaser.GameObjects.Sprite
     wheel!: Phaser.GameObjects.Sprite
     Stair!: Phaser.GameObjects.Sprite
-    snow!: Phaser.GameObjects.Sprite
     spinWheelBg!: Phaser.GameObjects.Sprite
     spinCircle!: Phaser.GameObjects.Sprite
     spinCenter!: Phaser.GameObjects.Sprite
@@ -26,6 +25,7 @@ export default class BonusScene extends Scene{
         // console.log(values, "values");
         const { width, height } = this.cameras.main;
         this.bonusContainer = this.add.container();
+        const bonusHeading = new Phaser.GameObjects.Text(this, gameConfig.scale.width * 0.5, gameConfig.scale.height * 0.07, "Click on start button to start \n Spin Wheel Bonus Game.", { fontSize: '50px', fontFamily: 'Serat', align: 'center', color: "#b23b00" }).setOrigin(0.5);
         this.SceneBg = new Phaser.GameObjects.Sprite(this, width/2, height/2, 'Background').setDisplaySize(width, height)
         this.Stair = new Phaser.GameObjects.Sprite(this, width/2, height/1.08, 'stairs').setDepth(0)
         this.spinWheelBg = new Phaser.GameObjects.Sprite(this, width/2, height/2 - 40, 'wheelBg').setScale(0.6)
@@ -49,6 +49,7 @@ export default class BonusScene extends Scene{
         // Add sprites to the bonusContainer in the correct order
         this.bonusContainer.add([
             this.SceneBg,
+            bonusHeading,
             this.Stair,
             this.spinWheelBg,
             this.spinContainer,
@@ -63,13 +64,29 @@ export default class BonusScene extends Scene{
         for(let i=0; i< segments; i++){
             let startAngle = Phaser.Math.DegToRad(i * anglePerSegment);
             let endAngle = Phaser.Math.DegToRad((i + 1) * anglePerSegment);
+            let midAngle = (startAngle + endAngle)/2;
             // this.spinCircle.slice(0, 0, 200, startAngle, endAngle, false);
-            let text = this.add.text(0, 0, initData.gameData.BonusData[i], { font: "20px Arial", color: "#fff" });
+            let bonusValue = Number(initData.gameData.BonusData[i]);
+            let betValue = Number(initData.gameData.Bets[currentGameData.currentBetIndex]);
+            let betAmount = (bonusValue * betValue).toFixed(3);
+            
+            let text = this.add.text(0, 0, betAmount, { font: "27px", color: "#fff", fontFamily: "Serat" })
             text.setOrigin(0.5);
             text.setPosition(
                 120 * Math.cos(startAngle + (endAngle - startAngle) / 2),
                 120 * Math.sin(startAngle + (endAngle - startAngle) / 2)
             );
+            // Calculate rotation angle (add 90 degrees to make text face center)
+            // Calculate rotation to make text readable from outside
+
+            let rotationAngle = (midAngle + Math.PI/18) - 0.08;
+            // Adjust text rotation based on position
+            if (midAngle > 0 && midAngle < Math.PI) {
+                // Bottom half of wheel
+                rotationAngle += Math.PI - 0.08;
+            }
+            text.setRotation(rotationAngle);
+
             this.spinContainer.add(text);
         }
         this.spinContainer.angle = 0;
@@ -79,6 +96,10 @@ export default class BonusScene extends Scene{
                     this.startButton.setTexture("freeSpinStartButtonPressed")
                     this.spinWheel(ResultData.gameData.BonusStopIndex);
                  }
+                 //else{
+                    // this.spinWheel(1);
+                 // }
+                 // Pass the index you want the wheel to stop at
             }
         })
       }

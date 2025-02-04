@@ -345,7 +345,7 @@ class Symbols {
         this.symbol.setOrigin(0.5, 0.5);
         // Load textures and create animation
         const textures: string[] = [];
-        for (let i = 0; i < 28; i++) {
+        for (let i = 0; i < 48; i++) {
             textures.push(`${symbolKey}`);
         }
         this.scene.anims.create({
@@ -378,7 +378,7 @@ class Symbols {
             let textureKeys: string[] = [];
             // Retrieve the elementId based on index
             const elementId = ResultData.gameData.ResultReel[this.index.y][this.index.x];
-            for (let i = 0; i < 15; i++) {
+            for (let i = 0; i < 48; i++) {
                 const textureKey = `slots${elementId}_${i}`;
                 // Check if the texture exists in cache
                 if (this.scene.textures.exists(textureKey)) {
