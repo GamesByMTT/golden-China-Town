@@ -75,6 +75,7 @@ export const LoaderConfig = {
     stopButton: "src/sprites/stopButton.png",
 
     turboSpin: "src/sprites/turboSpin.png",
+    yourWin: "src/sprites/YouWin.png",
 
     turboButton0: "src/sprites/turboButton0.png",
     turboButton1: "src/sprites/turboButton1.png",

@@ -35,9 +35,9 @@ export class PopupManager {
         this.popupContainer.setVisible(true);
     }
 
-    showBonusPopup(){
+    showBonusPopup(config: { onClose?: () => void }){
         this.closeCurrentPopup();
-        this.currentPopup = new BonusPopup(this.scene);
+        this.currentPopup = new BonusPopup(this.scene, { onClose: config.onClose });
         this.popupContainer.add(this.currentPopup);
         this.popupContainer.setVisible(true)
     }

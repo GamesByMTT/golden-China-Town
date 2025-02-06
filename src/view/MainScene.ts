@@ -138,7 +138,7 @@ export default class MainScene extends Scene {
                         this.uiContainer.autoBetBtn.emit('pointerdown'); 
                         this.uiContainer.autoBetBtn.emit('pointerup');
                     }
-                    Globals.SceneHandler?.addScene('BonusScene', BonusScene, true)
+                    // Globals.SceneHandler?.addScene('BonusScene', BonusScene, true)
                 }         
                 // this.uiContainer.currentWiningText.updateLabelText(ResultData.playerData.currentWining.toFixed(2));
                 currentGameData.currentBalance = ResultData.playerData.Balance;

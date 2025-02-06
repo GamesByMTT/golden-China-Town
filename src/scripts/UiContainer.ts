@@ -609,12 +609,12 @@ export class UiContainer extends Phaser.GameObjects.Container {
         if (ResultData.gameData.isBonus) {
             currentGameData.bonusOpen = true;
             this.scene.events.emit("bonusStateChanged", true);
-            // this.popupManager.showBonusPopup({
-            //     onClose: () => {
-            //         currentGameData.bonusOpen = false;
-            //         this.scene.events.emit("bonusStateChanged", false);
-            //     }
-            // });
+            this.popupManager.showBonusPopup({
+                onClose: () => {
+                    currentGameData.bonusOpen = false;
+                    this.scene.events.emit("bonusStateChanged", false);
+                }
+            });
         }
     }
 
